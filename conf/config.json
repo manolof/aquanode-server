@@ -1,0 +1,13 @@
+{
+  "location": {
+    "latitude": 47.050168,
+    "longitude": 8.309307
+  },
+  "port": 3000,
+  "pins": {
+    "day": "GPIO17",
+    "night": "GPIO5"
+  },
+  "schedule": "./schedule.json",
+  "logFile": "../log/log"
+}
