@@ -5,9 +5,11 @@
   },
   "port": 3000,
   "pins": {
-    "day": "GPIO17",
-    "night": "GPIO5"
+    "day": "14",
+    "night": "14"
   },
+  "fadeDuration": 900000,
+  "fadeFramerate": 5000,
   "schedule": "./schedule.json",
   "logFile": "../log/log"
 }

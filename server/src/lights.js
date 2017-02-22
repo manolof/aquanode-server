@@ -1,22 +1,21 @@
 const logger = require('./logger.js');
 const schedule = require('./schedule.js');
-// var raspi = require('raspi');
-// var gpio = require('raspi-gpio');
-// var config = schedule.getConfig();
+const config = schedule.getConfig();
 
 let setStateAfterInit = null;
 let initialized = false;
-// var dayPin = null;
-// var nightPin = null;
 
-// raspi.init(function() {
-// 	dayPin = new gpio.DigitalOutput(config.pins.day);
-// 	nightPin = new gpio.DigitalOutput(config.pins.night);
-	initialized = true;
-// 	if (setStateAfterInit) {
-// 		exports.setState(setStateAfterInit);
-// 	}
-// });
+const Gpio = require('pigpio').Gpio;
+let led = new Gpio(config.pins.day, { mode: Gpio.OUTPUT });
+
+let interval;
+let count = 0;
+
+initialized = true;
+
+if (setStateAfterInit) {
+	exports.setState(setStateAfterInit);
+}
 
 exports.setState = function setState(state) {
 	switch (state) {
@@ -40,11 +39,10 @@ function setDay() {
 		setStateAfterInit = 'day';
 		return;
 	}
-	logger.info('Setting the lighting state to day');
+	logger.info('Setting the lighting state to DAY');
 	schedule.getStatus().state = 'day';
-	logger.info('DAY!');
-	// dayPin.write(gpio.HIGH);
-	// nightPin.write(gpio.LOW);
+
+	fader(true);
 }
 
 function setNight() {
@@ -52,11 +50,10 @@ function setNight() {
 		setStateAfterInit = 'night';
 		return;
 	}
-	logger.info('Setting the lighting state to night');
+	logger.info('Setting the lighting state to NIGHT');
 	schedule.getStatus().state = 'night';
-	logger.info('NIGHT!');
-	// dayPin.write(gpio.LOW);
-	// nightPin.write(gpio.HIGH);
+
+	fader(false);
 }
 
 function setOff() {
@@ -64,9 +61,51 @@ function setOff() {
 		setStateAfterInit = 'off';
 		return;
 	}
-	logger.info('Setting the lighting state to off');
+	logger.info('Setting the lighting state to OFF');
 	schedule.getStatus().state = 'off';
-	logger.info('OFF!');
-	// dayPin.write(gpio.LOW);
-	// nightPin.write(gpio.LOW);
+
+	led.pwmWrite(0);
+	clearInterval(interval);
+	count = 0;
+}
+
+function fader(mode) {
+	clearInterval(interval);
+
+	const start = 0;
+	const end = 255;
+	const duration = config.fadeDuration;
+	const framerate = config.fadeFramerate;
+	const toAdd = ((end - start) * framerate) / duration;
+
+	console.log('toAdd', toAdd);
+	interval = setInterval(function() {
+		if (mode) {
+			if (count <= end - 1) {
+				count += toAdd;
+			}
+			else {
+				clearInterval(interval);
+				return;
+			}
+		} else {
+			if (count > start) {
+				count -= toAdd;
+			}
+			else {
+				clearInterval(interval);
+				return;
+			}
+		}
+
+		if (count > end) {
+			count = end;
+		}
+		else if (count < start) {
+			count = start;
+		}
+
+		console.log('count', count);
+		led.pwmWrite(Math.floor(count));
+	}, framerate);
 }

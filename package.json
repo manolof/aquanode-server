@@ -6,6 +6,7 @@
   "bin": "./server/bin/aquarium-control",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "gulp",
     "start": "node ./server/bin/aquarium-control"
   },
   "licenses": [
@@ -18,6 +19,7 @@
     "body-parser": "^1.13.3",
     "commander": "^2.8.1",
     "express": "^4.13.3",
+    "pigpio": "^0.4.0",
     "suncalc": "^1.6.0",
     "transport-logger": "^1.0.0"
   },
