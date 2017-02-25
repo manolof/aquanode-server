@@ -72,7 +72,7 @@ function setOff() {
 function fader(mode) {
 	clearInterval(interval);
 
-	const start = 0;
+	const start = 5;
 	const end = 255;
 	const duration = config.fadeDuration;
 	const framerate = config.fadeFramerate;
