@@ -4,14 +4,20 @@
   "schedule": [
     {
       "name": "Sunrise",
-      "type": "dynamic",
-      "event": "sunrise",
+      "type": "manual",
+      "time": {
+        "hour": 8,
+        "minute": 0
+      },
       "state": "day"
     },
     {
       "name": "Sunset",
-      "type": "dynamic",
-      "event": "sunset",
+      "type": "manual",
+      "time": {
+        "hour": 17,
+        "minute": 0
+      },
       "state": "night"
     },
     {

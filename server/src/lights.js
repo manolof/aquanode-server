@@ -72,17 +72,17 @@ function setOff() {
 function fader(mode) {
 	clearInterval(interval);
 
-	const start = 5;
-	const end = 255;
+	const start = 0;
+	const end = 250;
 	const duration = config.fadeDuration;
 	const framerate = config.fadeFramerate;
-	const toAdd = ((end - start) * framerate) / duration;
+	const difference = ((end - start) * framerate) / duration;
 
-	console.log('toAdd', toAdd);
+	console.log('difference', difference);
 	interval = setInterval(function() {
 		if (mode) {
 			if (count <= end - 1) {
-				count += toAdd;
+				count += difference;
 			}
 			else {
 				clearInterval(interval);
@@ -90,7 +90,7 @@ function fader(mode) {
 			}
 		} else {
 			if (count > start) {
-				count -= toAdd;
+				count -= difference;
 			}
 			else {
 				clearInterval(interval);

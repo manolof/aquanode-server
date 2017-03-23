@@ -8,8 +8,8 @@
     "day": "14",
     "night": "14"
   },
-  "fadeDuration": 900000,
-  "fadeFramerate": 5000,
+  "fadeDuration": 1800000,
+  "fadeFramerate": 8000,
   "schedule": "./schedule.json",
   "logFile": "../log/log"
 }
