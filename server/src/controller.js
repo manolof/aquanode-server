@@ -1,4 +1,3 @@
-const sunCalc = require('suncalc');
 const schedule = require('./schedule.js');
 const lights = require('./lights.js');
 const logger = require('./logger.js');
@@ -36,7 +35,8 @@ function scheduleNextTransition() {
 		lights.setState(nextScheduleEntry.state);
 		if (dailySchedule.length) {
 			scheduleNextTransition();
-		} else {
+		}
+		else {
 			scheduleMidnightReset();
 		}
 	}, nextScheduleEntry.date.getTime() - Date.now());
@@ -62,25 +62,8 @@ function setSchedule() {
 
 	// Calculate the daily schedule
 	let entries = currentSchedule.schedule.map(function(entry) {
-
-		// If we're manual, calculate the time for today and return it
-		if (entry.type == 'manual') {
-			return {
-				date: createDate(entry.time.hour, entry.time.minute, 0),
-				state: entry.state,
-				name: entry.name
-			};
-		}
-
-		// If we're dynamic, use suncalc to figure out the time
-		const times = sunCalc.getTimes(createDate(12, 0, 0), config.location.latitude, config.location.longitude);
-		const date = times[entry.event];
-		if (!date) {
-			throw new Error('Invalid dynamic event "' + entry.event + '". Must be one of ' +
-				Object.keys(times).join(', '));
-		}
 		return {
-			date: date,
+			date: createDate(entry.time.hour, entry.time.minute, 0),
 			state: entry.state,
 			name: entry.name
 		};
@@ -133,7 +116,8 @@ function setSchedule() {
 	// need to wait until tomorrow to do it again
 	if (!entries.length) {
 		scheduleMidnightReset();
-	} else {
+	}
+	else {
 		scheduleNextTransition();
 	}
 }

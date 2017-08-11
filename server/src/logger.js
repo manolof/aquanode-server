@@ -20,7 +20,8 @@ if (logFile) {
 		prependLevel: true,
 		colorize: true
 	}]);
-} else {
+}
+else {
 	module.exports = new Logger({
 		minLevel: 'trace',
 		timestamp: true,

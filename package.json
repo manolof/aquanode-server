@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "gulp": "gulp",
     "start": "node ./server/bin/aquarium-control",
+    "forever": "forever",
     "start:forever": "forever start ./server/bin/aquarium-control.js"
   },
   "licenses": [
@@ -21,7 +22,6 @@
     "commander": "^2.8.1",
     "express": "^4.13.3",
     "pigpio": "^0.4.0",
-    "suncalc": "^1.6.0",
     "transport-logger": "^1.0.0"
   },
   "devDependencies": {
@@ -30,9 +30,6 @@
     "babel-preset-react": "^6.16.0",
     "del": "^2.2.2",
     "gulp": "^3.9.0",
-    "gulp-babel": "^5.2.1",
-    "gulp-plumber": "^1.0.1",
-    "gulp-sourcemaps": "^1.5.2",
-    "gulp-watch": "^4.3.5"
+    "gulp-babel": "^5.2.1"
   }
 }
