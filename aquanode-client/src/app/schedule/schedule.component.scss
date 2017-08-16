@@ -1,0 +1,12 @@
+@import '~@angular/material/theming';
+
+:host {
+	display: block;
+	padding: $mat-menu-side-padding;
+
+	& /deep/ md-list,
+	& /deep/ md-button-toggle-group {
+		padding: 0;
+		margin: $mat-menu-side-padding;
+	}
+}

@@ -1,0 +1,21 @@
+{
+  "name": "aquanode",
+  "description": "aquanode server",
+  "version": "0.0.1",
+  "license": "MIT",
+  "bin": "./bin/aquarium-control",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/aquarium-control",
+    "forever": "forever",
+    "start:forever": "forever start ./bin/aquarium-control.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "commander": "^2.8.1",
+    "express": "^4.13.3",
+    "pigpio": "^0.4.0",
+    "transport-logger": "^1.0.0"
+  },
+  "devDependencies": {}
+}
