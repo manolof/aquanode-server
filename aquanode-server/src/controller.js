@@ -52,7 +52,7 @@ function setSchedule() {
 	}
 
 	// If we're in override mode, set that mode and exit early
-	if (currentSchedule.mode == 'override') {
+	if (currentSchedule.mode === 'override') {
 		logger.info('Setting the override mode and skipping daily schedule creation');
 		lights.setState(currentSchedule.overrideState);
 		return;
@@ -71,7 +71,7 @@ function setSchedule() {
 	// Remove any events that occur after the next event, e.g. sunset is late enough that
 	// it would occur after a manual time event due to time of year
 	entries = entries.filter(function(entry, i) {
-		if (i == entries.length - 1) {
+		if (i === entries.length - 1) {
 			return true;
 		}
 		const isValid = entry.date.getTime() < entries[i + 1].date.getTime();
