@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./bin/www",
-    "forever": "forever",
+    "start:dev": "NODE_ENV=development npm run start",
     "forever:start": "forever start ./bin/www"
   },
   "dependencies": {
@@ -14,6 +14,7 @@
     "commander": "^2.8.1",
     "express": "^4.13.3",
     "pigpio": "^0.4.0",
+    "pigpio-mock": "^0.0.1",
     "transport-logger": "^1.0.0"
   },
   "devDependencies": {

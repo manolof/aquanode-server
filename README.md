@@ -18,4 +18,4 @@ Lighting is fading in and out between day and night settings, by the specified s
 
 - [ ] TSLint on server-side
 - [ ] Unit tests
-- [ ] mock pigpio library
+- [x] mock pigpio library

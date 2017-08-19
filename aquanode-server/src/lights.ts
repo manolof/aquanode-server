@@ -1,3 +1,7 @@
+const pigpio = process.env.NODE_ENV === 'development' ?
+	require('pigpio-mock') :
+	require('pigpio');
+
 import { logger } from './logger';
 import { getConfig, getStatus } from './schedule';
 
@@ -6,7 +10,7 @@ const config = getConfig();
 let setStateAfterInit = null;
 let initialized = false;
 
-// const Gpio = pigpio.Gpio;
+const Gpio = pigpio.Gpio;
 
 initialized = true;
 
@@ -23,7 +27,7 @@ export const setState = (state) => {
 			break;
 		default:
 			logger.error(`A light change was requested for an invalid state ${state}. 
-				Must be one of "day", "night", or "off"`);
+				Must be one of 'day', 'night', or 'off'`);
 	}
 };
 
@@ -40,12 +44,12 @@ const Lights = {
 		colorRange: 299,
 		start: config.luminosity.start,
 		end: config.luminosity.end,
-		// whiteLED: new Gpio(config.pins.white, { mode: Gpio.OUTPUT }),
-		// rgbLEDs: {
-		// 	red: new Gpio(config.pins.red, { mode: Gpio.OUTPUT }),
-		// 	green: new Gpio(config.pins.green, { mode: Gpio.OUTPUT }),
-		// 	blue: new Gpio(config.pins.blue, { mode: Gpio.OUTPUT }),
-		// },
+		whiteLED: new Gpio(config.pins.white, { mode: Gpio.OUTPUT }),
+		rgbLEDs: {
+			red: new Gpio(config.pins.red, { mode: Gpio.OUTPUT }),
+			green: new Gpio(config.pins.green, { mode: Gpio.OUTPUT }),
+			blue: new Gpio(config.pins.blue, { mode: Gpio.OUTPUT }),
+		},
 		get colorFrame() {
 			return Math.floor(Lights.count * (this.colorRange / this.end));
 		},
@@ -72,12 +76,12 @@ const Lights = {
 	},
 
 	off() {
-		// this.options.whiteLED.pwmWrite(0);
+		this.options.whiteLED.pwmWrite(0);
 
-		// Object.keys(this.options.rgbLEDs)
-		// 	.map((led) => {
-		// 		this.options.rgbLEDs[led].pwmWrite(0);
-		// 	});
+		Object.keys(this.options.rgbLEDs)
+			.map((led) => {
+				this.options.rgbLEDs[led].pwmWrite(0);
+			});
 
 		this.count = 0;
 	},
@@ -115,15 +119,15 @@ const Lights = {
 	},
 
 	setRgbLED() {
-		// Object.keys(this.options.rgbLEDs)
-		// 	.map((led, i) => {
-		// 		this.options.rgbLEDs[led]
-		// 			.pwmWrite(this.options.rgbSpectrum[led][this.options.colorFrame]);
-		// 	});
+		Object.keys(this.options.rgbLEDs)
+			.map((led) => {
+				this.options.rgbLEDs[led]
+					.pwmWrite(this.options.rgbSpectrum[led][this.options.colorFrame]);
+			});
 	},
 
 	setWhiteLED() {
-		// this.options.whiteLED.pwmWrite(this.options.whiteFrame);
+		this.options.whiteLED.pwmWrite(this.options.whiteFrame);
 	},
 };
 
