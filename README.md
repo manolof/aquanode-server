@@ -5,9 +5,9 @@
 <table width="100%">
 	<tbody>
 		<tr>
-			<td><img src="/../images/nodejs.svg?raw=true" alt="Node.js" /></td>
-			<td><img src="/../images/angular.svg?raw=true" alt="Angular" /></td>
-			<td><img src="/../images/typescript.svg?raw=true" alt="TypeScript" /></td>
+			<td><img src="/../images/nodejs.png?raw=true" alt="Node.js" /></td>
+			<td><img src="/../images/angular.png?raw=true" alt="Angular" /></td>
+			<td><img src="/../images/typescript.png?raw=true" alt="TypeScript" /></td>
 		</tr>
 	</tbody>
 </table>
