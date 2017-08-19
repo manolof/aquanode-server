@@ -1,0 +1,33 @@
+{
+  "mode": "program",
+  "overrideState": "night",
+  "schedule": [
+    {
+      "name": "Sunrise",
+      "type": "manual",
+      "time": {
+        "hour": 8,
+        "minute": 0
+      },
+      "state": "day"
+    },
+    {
+      "name": "Sunset",
+      "type": "manual",
+      "time": {
+        "hour": 17,
+        "minute": 0
+      },
+      "state": "night"
+    },
+    {
+      "name": "Night",
+      "type": "manual",
+      "time": {
+        "hour": 23,
+        "minute": 0
+      },
+      "state": "off"
+    }
+  ]
+}

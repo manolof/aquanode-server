@@ -1,0 +1,23 @@
+{
+  "name": "aquanode",
+  "description": "aquanode server",
+  "version": "0.0.1",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www",
+    "forever": "forever",
+    "forever:start": "forever start ./bin/www"
+  },
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "commander": "^2.8.1",
+    "express": "^4.13.3",
+    "pigpio": "^0.4.0",
+    "transport-logger": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.16.4",
+    "@types/express": "^4.0.36"
+  }
+}
