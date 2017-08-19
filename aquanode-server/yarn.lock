@@ -253,6 +253,10 @@ path-to-regexp@0.1.7:
   version "0.1.7"
   resolved "https://registry.yarnpkg.com/path-to-regexp/-/path-to-regexp-0.1.7.tgz#df604178005f522f15eb4490e7247a1bfaa67f8c"
 
+pigpio-mock@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/pigpio-mock/-/pigpio-mock-0.0.1.tgz#5e5b3fd74987b6bfcc653b2de1219aeabbb0dcb8"
+
 pigpio@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/pigpio/-/pigpio-0.4.0.tgz#11fbcb4517980ca1b8252ebe21f7db6f7ea655b9"
