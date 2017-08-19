@@ -12,9 +12,10 @@ Automated lighting control for an aquarium using a Raspberry Pi.
 
 Lighting is fading in and out between day and night settings, by the specified schedule, and setting the appropriate GPIO pins.
 
-> One the client-side it features [Angular 4](https://angular.io), [TypeScript](http://www.typescriptlang.org/), [@types](https://www.npmjs.com/~types), [TSLint](http://palantir.github.io/tslint/).
+> One the client-side it features [Angular 4](https://angular.io), [ngrx/store](https://github.com/ngrx/store), [ngrx/effects](https://github.com/ngrx/effects), [TypeScript](http://www.typescriptlang.org/), [@types](https://www.npmjs.com/~types), [TSLint](http://palantir.github.io/tslint/).
 
 > One the server-side it features [Node.js](https://nodejs.org/), [Express.js](https://expressjs.com/), [pigpio](https://github.com/fivdi/pigpio), [TypeScript](http://www.typescriptlang.org/), [@types](https://www.npmjs.com/~types), [TSLint](http://palantir.github.io/tslint/).
 
 - [ ] TSLint on server-side
 - [ ] Unit tests
+- [ ] mock pigpio library
