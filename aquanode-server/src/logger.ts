@@ -1,15 +1,17 @@
-const path = require('path');
-const Logger = require('transport-logger');
+import * as path from 'path';
+import * as Logger from 'transport-logger';
 
-const config = require('./schedule').getConfig();
+import { getConfig } from './schedule';
+
+const config = getConfig();
 
 let logFile = config.logFile || '/var/log/aquarium-control/log';
 if (!path.isAbsolute(logFile)) {
-	logFile = path.join(path.dirname(config.configPath), logFile);
+	logFile = path.join(path.dirname(config.configPath as string), logFile);
 }
 
-if (logFile) {
-	module.exports = new Logger([{
+export const logger = logFile ?
+	new Logger([{
 		destination: logFile,
 		minLevel: 'info',
 		timestamp: true,
@@ -21,13 +23,11 @@ if (logFile) {
 		timestamp: true,
 		prependLevel: true,
 		colorize: true
-	}]);
-}
-else {
-	module.exports = new Logger({
+	}])
+	:
+	new Logger({
 		minLevel: 'trace',
 		timestamp: true,
 		prependLevel: true,
 		colorize: true
 	});
-}
