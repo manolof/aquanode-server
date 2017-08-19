@@ -19,7 +19,7 @@ export function statusReducer(state: State = initialStatusState, action: _action
 			return {
 				...state,
 				loading: true
-			}
+			};
 		}
 
 		case _action.GET_STATUS_SUCCESS: {

@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 export class Schedule {
 	mode: ScheduleMode;
 	overrideState: ScheduleState;

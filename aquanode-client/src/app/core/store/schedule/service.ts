@@ -25,7 +25,7 @@ export class ScheduleService {
 	}
 
 	public getScheduleDispatch$(): void {
-		this.store.dispatch(new action.GetScheduleAction);
+		this.store.dispatch(new action.GetScheduleAction());
 	}
 
 	public setSchedule(body: Schedule): Observable<Schedule> {

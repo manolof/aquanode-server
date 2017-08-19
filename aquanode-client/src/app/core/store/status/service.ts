@@ -20,7 +20,7 @@ export class StatusService {
 	}
 
 	public statusDispatch$(): void {
-		this.store.dispatch(new action.GetStatusAction);
+		this.store.dispatch(new action.GetStatusAction());
 	}
 
 	public getStatus(): Observable<Status> {
