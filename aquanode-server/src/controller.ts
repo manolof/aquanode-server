@@ -1,36 +1,36 @@
-const schedule = require('./schedule');
-const lights = require('./lights');
-const logger = require('./logger');
+import { getSchedule, getStatus, onScheduleChanged } from './schedule';
+import * as lights from './lights';
+import { logger } from './logger';
 
 let scheduleTimeout = null;
 let dailySchedule;
 
-function createDate(hours, minutes, seconds) {
+const createDate = (hours, minutes, seconds) => {
 	const date = new Date();
 	date.setHours(hours);
 	date.setMinutes(minutes);
 	date.setSeconds(seconds);
 	return date;
-}
+};
 
-function scheduleMidnightReset() {
+const scheduleMidnightReset = () => {
 	const midnightDate = new Date(createDate(0, 0, 0).getTime() + 24 * 60 * 60 * 1000);
-	const status = schedule.getStatus();
+	const status = getStatus();
 	status.nextTransitionTime = midnightDate.getTime();
 	status.nextTransitionState = 'midnight reschedule';
 	logger.info('Scheduling the daily schedule preparation for ' + midnightDate);
 	scheduleTimeout = setTimeout(setSchedule, midnightDate.getTime() - Date.now());
-}
+};
 
-function scheduleNextTransition() {
+const scheduleNextTransition = () => {
 	const nextScheduleEntry = dailySchedule.shift();
-	const currentStatus = schedule.getStatus();
+	const currentStatus = getStatus();
 	logger.info('Scheduling the next transition from ' + currentStatus.state +
 		' to ' + nextScheduleEntry.state + ' for ' + nextScheduleEntry.date);
-	const status = schedule.getStatus();
+	const status = getStatus();
 	status.nextTransitionTime = nextScheduleEntry.date.getTime();
 	status.nextTransitionState = nextScheduleEntry.state;
-	setTimeout(function() {
+	setTimeout(() => {
 		lights.setState(nextScheduleEntry.state);
 		if (dailySchedule.length) {
 			scheduleNextTransition();
@@ -39,11 +39,11 @@ function scheduleNextTransition() {
 			scheduleMidnightReset();
 		}
 	}, nextScheduleEntry.date.getTime() - Date.now());
-}
+};
 
-function setSchedule() {
+const setSchedule = () => {
 
-	const currentSchedule = schedule.getSchedule();
+	const currentSchedule = getSchedule();
 
 	// Cancel the previous schedule, if it was running
 	if (scheduleTimeout) {
@@ -60,17 +60,17 @@ function setSchedule() {
 	logger.info('Creating the daily schedule');
 
 	// Calculate the daily schedule
-	let entries = currentSchedule.schedule.map(function(entry) {
+	let entries = currentSchedule.schedule.map((entry) => {
 		return {
 			date: createDate(entry.time.hour, entry.time.minute, 0),
 			state: entry.state,
-			name: entry.name
+			name: entry.name,
 		};
 	});
 
 	// Remove any events that occur after the next event, e.g. sunset is late enough that
 	// it would occur after a manual time event due to time of year
-	entries = entries.filter(function(entry, i) {
+	entries = entries.filter((entry, i) => {
 		if (i === entries.length - 1) {
 			return true;
 		}
@@ -91,23 +91,25 @@ function setSchedule() {
 	// Find the most recent schedule in the past to set the current lighting state
 	// We set a 1 second buffer so that we don't miss anything while processing
 	const currentTime = Date.now();
-	const currentEntry = entries.filter(function(entry) {
+	const currentEntry = entries.filter((entry) => {
 		return entry.date.getTime() <= currentTime + 1000;
 	}).pop();
+
 	if (!currentEntry) {
 		throw new Error('Internal error: could not find current entry');
 	}
 	lights.setState(currentEntry.state);
 
 	// Remove the entries that are in the past, using the 1 second buffer as above
-	entries = entries.filter(function(entry) {
+	entries = entries.filter((entry) => {
 		return entry.date.getTime() > currentTime + 1000;
 	});
 
 	// Store the entries to the global state for use by scheduleNextTransition
 	dailySchedule = entries;
 	logger.info('The daily schedule is as follows: ');
-	entries.forEach(function(entry) {
+
+	entries.forEach((entry) => {
 		logger.info('  ' + entry.state + ': ' + entry.date);
 	});
 
@@ -119,7 +121,7 @@ function setSchedule() {
 	else {
 		scheduleNextTransition();
 	}
-}
+};
 
-schedule.onScheduleChanged(setSchedule);
+onScheduleChanged(setSchedule);
 setSchedule();

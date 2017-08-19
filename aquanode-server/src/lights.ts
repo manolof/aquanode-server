@@ -1,21 +1,16 @@
-const logger = require('./logger');
-const schedule = require('./schedule');
-const pigpio = require('pigpio');
+import { logger } from './logger';
+import { getConfig, getStatus } from './schedule';
 
-const config = schedule.getConfig();
+const config = getConfig();
 
 let setStateAfterInit = null;
 let initialized = false;
 
-const Gpio = pigpio.Gpio;
+// const Gpio = pigpio.Gpio;
 
 initialized = true;
 
-if (setStateAfterInit) {
-	exports.setState(setStateAfterInit);
-}
-
-exports.setState = function setState(state) {
+export const setState = (state) => {
 	switch (state) {
 		case 'day':
 			setDay();
@@ -32,6 +27,10 @@ exports.setState = function setState(state) {
 	}
 };
 
+if (setStateAfterInit) {
+	setState(setStateAfterInit);
+}
+
 const Lights = {
 	count: 0,
 
@@ -41,12 +40,12 @@ const Lights = {
 		colorRange: 299,
 		start: config.luminosity.start,
 		end: config.luminosity.end,
-		whiteLED: new Gpio(config.pins.white, { mode: Gpio.OUTPUT }),
-		rgbLEDs: {
-			red: new Gpio(config.pins.red, { mode: Gpio.OUTPUT }),
-			green: new Gpio(config.pins.green, { mode: Gpio.OUTPUT }),
-			blue: new Gpio(config.pins.blue, { mode: Gpio.OUTPUT }),
-		},
+		// whiteLED: new Gpio(config.pins.white, { mode: Gpio.OUTPUT }),
+		// rgbLEDs: {
+		// 	red: new Gpio(config.pins.red, { mode: Gpio.OUTPUT }),
+		// 	green: new Gpio(config.pins.green, { mode: Gpio.OUTPUT }),
+		// 	blue: new Gpio(config.pins.blue, { mode: Gpio.OUTPUT }),
+		// },
 		get colorFrame() {
 			return Math.floor(Lights.count * (this.colorRange / this.end));
 		},
@@ -73,12 +72,12 @@ const Lights = {
 	},
 
 	off() {
-		this.options.whiteLED.pwmWrite(0);
+		// this.options.whiteLED.pwmWrite(0);
 
-		Object.keys(this.options.rgbLEDs)
-			.map((led) => {
-				this.options.rgbLEDs[led].pwmWrite(0);
-			});
+		// Object.keys(this.options.rgbLEDs)
+		// 	.map((led) => {
+		// 		this.options.rgbLEDs[led].pwmWrite(0);
+		// 	});
 
 		this.count = 0;
 	},
@@ -116,68 +115,77 @@ const Lights = {
 	},
 
 	setRgbLED() {
-		Object.keys(this.options.rgbLEDs)
-			.map((led, i) => {
-				this.options.rgbLEDs[led]
-					.pwmWrite(this.options.rgbSpectrum[led][this.options.colorFrame]);
-			});
+		// Object.keys(this.options.rgbLEDs)
+		// 	.map((led, i) => {
+		// 		this.options.rgbLEDs[led]
+		// 			.pwmWrite(this.options.rgbSpectrum[led][this.options.colorFrame]);
+		// 	});
 	},
 
 	setWhiteLED() {
-		this.options.whiteLED.pwmWrite(this.options.whiteFrame);
+		// this.options.whiteLED.pwmWrite(this.options.whiteFrame);
 	},
 };
 
-function setDay() {
+const setDay = () => {
 	if (!initialized) {
 		setStateAfterInit = 'day';
 		return;
 	}
 	logger.info('Setting the lighting state to DAY');
-	schedule.getStatus().state = 'day';
+	getStatus().state = 'day';
 
 	Lights.stop();
 	Lights.fader(true);
-}
+};
 
-function setNight() {
+const setNight = () => {
 	if (!initialized) {
 		setStateAfterInit = 'night';
 		return;
 	}
 	logger.info('Setting the lighting state to NIGHT');
-	schedule.getStatus().state = 'night';
+	getStatus().state = 'night';
 
 	Lights.stop();
 	Lights.fader(false);
-}
+};
 
-function setOff() {
+const setOff = () => {
 	if (!initialized) {
 		setStateAfterInit = 'off';
 		return;
 	}
 	logger.info('Setting the lighting state to OFF');
-	schedule.getStatus().state = 'off';
+	getStatus().state = 'off';
 
 	Lights.stop();
 	Lights.off();
-}
+};
 
-function Interval(fn, time) {
-	let timer = false;
+class Interval {
+	private fn: Function;
+	private time: number;
+	private timer: boolean | any;
 
-	this.start = () => {
-		if (!this.isRunning()) {
-			timer = setInterval(fn, time);
+	constructor(fn, time) {
+		this.fn = fn;
+		this.time = time;
+		this.timer = false;
+	}
+
+	start() {
+		if (!this.isRunning) {
+			this.timer = setInterval(this.fn, this.time);
 		}
 	};
 
-	this.stop = () => {
-		clearInterval(timer);
-		timer = false;
+	stop() {
+		clearInterval(this.timer);
+		this.timer = false;
 	};
-	this.isRunning = () => {
-		return timer !== false;
+
+	get isRunning(): boolean {
+		return this.timer !== false;
 	};
 }
