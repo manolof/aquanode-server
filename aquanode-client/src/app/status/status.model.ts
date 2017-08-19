@@ -1,3 +1,5 @@
+/* tslint:disable */
+
 export class Status {
 	time: number;
 	state: StatusState;

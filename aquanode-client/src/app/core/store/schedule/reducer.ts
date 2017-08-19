@@ -18,7 +18,7 @@ export function scheduleReducer(state: State = initialScheduleState, action: _ac
 			return {
 				...state,
 				loading: true
-			}
+			};
 		}
 
 		case _action.GET_SCHEDULE_SUCCESS: {
@@ -39,7 +39,7 @@ export function scheduleReducer(state: State = initialScheduleState, action: _ac
 			return {
 				...action.payload,
 				loading: true
-			}
+			};
 		}
 
 		case _action.SET_SCHEDULE_SUCCESS: {

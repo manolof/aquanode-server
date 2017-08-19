@@ -33,7 +33,7 @@ export class ScheduleComponent implements OnInit {
 		let schedule: Schedule;
 		const tabName = event.tab.textLabel.toLowerCase();
 
-		this.schedule$.take(1).subscribe(s => schedule = s);
+		this.schedule$.take(1).subscribe((s: Schedule) => schedule = s);
 
 		const payload: Schedule = {
 			mode: tabName as ScheduleMode,
@@ -47,7 +47,7 @@ export class ScheduleComponent implements OnInit {
 	public onStateClickChangeOverrideState = (state: ScheduleState) => {
 		let schedule: Schedule;
 
-		this.schedule$.take(1).subscribe(s => schedule = s);
+		this.schedule$.take(1).subscribe((s: Schedule) => schedule = s);
 
 		const payload: Schedule = {
 			mode: schedule.mode,
@@ -56,5 +56,5 @@ export class ScheduleComponent implements OnInit {
 		};
 
 		this.scheduleService.setScheduleDispatch$(payload);
-	};
+	}
 }
