@@ -1,18 +1,21 @@
+<p align="center">
+	<img src="/../images/logo.png?raw=true" width="500" height="500">
+</p>
+
+<p align="center">
+	<img src="/../images/tools.png?raw=true" width="213" height="76">
+</p>
+
 # Aquanode
 
-Automated lighting control for an aquarium using a Raspberry Pi. Lighting is switched between day settings and night settings by querying the internet for sunrise/sunset times and setting the appropriate GPIO pins.
+Automated lighting control for an aquarium using a Raspberry Pi.
 
-# License
+Lighting is fading in and out between day and night settings, by the specified schedule, and setting the appropriate GPIO pins.
 
-Aquanode is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+> One the client-side it features [Angular 4](https://angular.io), [ngrx/store](https://github.com/ngrx/store), [ngrx/effects](https://github.com/ngrx/effects), [TypeScript](http://www.typescriptlang.org/), [@types](https://www.npmjs.com/~types), [TSLint](http://palantir.github.io/tslint/).
 
-Aquarium Control is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
+> One the server-side it features [Node.js](https://nodejs.org/), [Express.js](https://expressjs.com/), [pigpio](https://github.com/fivdi/pigpio), [TypeScript](http://www.typescriptlang.org/), [@types](https://www.npmjs.com/~types), [TSLint](http://palantir.github.io/tslint/).
 
-You should have received a copy of the GNU General Public License
-along with Aquarium Control.  If not, see <http://www.gnu.org/licenses/>.
+- [ ] TSLint on server-side
+- [ ] Unit tests
+- [ ] mock pigpio library
