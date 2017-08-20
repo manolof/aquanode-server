@@ -24,7 +24,7 @@ export class StatusService {
 	}
 
 	public getStatus(): Observable<Status> {
-		return this.http.get(`http://127.0.0.1:3000/api/status`)
+		return this.http.get(`/api/status`)
 			.map((res: Response) => res.json());
 	}
 }
