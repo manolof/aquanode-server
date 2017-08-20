@@ -20,7 +20,7 @@ export class ScheduleService {
 	}
 
 	public getSchedule(): Observable<Schedule> {
-		return this.http.get(`http://127.0.0.1:3000/api/schedule`)
+		return this.http.get(`/api/schedule`)
 			.map((res: Response) => res.json());
 	}
 
@@ -29,7 +29,7 @@ export class ScheduleService {
 	}
 
 	public setSchedule(body: Schedule): Observable<Schedule> {
-		return this.http.post(`http://127.0.0.1:3000/api/schedule`, body)
+		return this.http.post(`/api/schedule`, body)
 			.map((res: Response) => res.json());
 	}
 
