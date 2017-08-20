@@ -1,6 +1,7 @@
 import * as express from 'express';
 import { Application, NextFunction, Request, Response } from 'express';
 import * as bodyParser from 'body-parser';
+import * as path from 'path';
 
 import { getConfig } from './schedule';
 import { logger } from './logger';
@@ -29,6 +30,8 @@ export class Server {
 		this.app.use(bodyParser.urlencoded({
 			extended: false,
 		}));
+
+		this.app.use(express.static(path.join(__dirname, '..', '..', 'client', 'dist')));
 
 		this.app.use((error: any, request: Request, response: Response, next: NextFunction) => {
 			error.status = 404;
