@@ -10,6 +10,11 @@ addons:
     packages:
       - g++-4.8
 before_install:
-  - sudo apt-get update -y
-  - sudo apt-get install pigpio -y
+  - rm pigpio.zip
+  - sudo rm -rf PIGPIO
+  - wget abyz.co.uk/rpi/pigpio/pigpio.zip
+  - unzip pigpio.zip
+  - cd PIGPIO
+  - make
+  - sudo make install
 script: cd aquanode-client && yarn && yarn ng -- build && cd ../aquanode-server && yarn && yarn start:dev
