@@ -1,7 +1,4 @@
 language: node_js
 node_js:
   - "8"
-env:
-  - CLIENT_DIR=aquanode-client
-  - SERVER_DIR=aquanode-server
-script: cd $CLIENT_DIR && yarn && yarn ng -- build && cd ../$SERVER_DIR && yarn && yarn start:dev
+script: cd aquanode-client && yarn && yarn ng -- build && cd ../aquanode-server && yarn && yarn start:dev
