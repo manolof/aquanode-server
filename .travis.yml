@@ -10,8 +10,6 @@ addons:
     packages:
       - g++-4.8
 before_install:
-  - rm pigpio.zip
-  - sudo rm -rf PIGPIO
   - wget abyz.co.uk/rpi/pigpio/pigpio.zip
   - unzip pigpio.zip
   - cd PIGPIO
