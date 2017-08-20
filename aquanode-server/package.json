@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
     "start": "node ./bin/www",
     "start:dev": "NODE_ENV=development npm run start",
     "forever:start": "forever start ./bin/www"
