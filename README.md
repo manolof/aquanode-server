@@ -6,7 +6,7 @@
 	<img src="/../images/tools.png?raw=true" width="213" height="76">
 </p>
 
-# Aquanode
+# Aquanode [![Build Status](https://travis-ci.org/manolof/aquanode.svg?branch=master)](https://travis-ci.org/manolof/aquanode)
 
 Automated lighting control for an aquarium using a Raspberry Pi.
 
