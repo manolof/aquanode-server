@@ -15,4 +15,6 @@ before_install:
   - cd PIGPIO
   - make
   - sudo make install
+before_script:
+  - npm install -g typescript
 script: cd $TRAVIS_BUILD_DIR/aquanode-client && yarn && yarn ng -- build && cd $TRAVIS_BUILD_DIR/aquanode-server && yarn && yarn build && yarn start:dev
