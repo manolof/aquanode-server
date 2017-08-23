@@ -2,10 +2,12 @@ const pigpio = process.env.NODE_ENV === 'development' ?
 	require('pigpio-mock') :
 	require('pigpio');
 
+import { Config } from './interfaces';
+import { configuration } from './config';
 import { logger } from './logger';
-import { getConfig, getStatus } from './schedule';
+import { getStatus } from './schedule';
 
-const config = getConfig();
+const config: Config = configuration.get();
 
 let setStateAfterInit = null;
 let initialized = false;

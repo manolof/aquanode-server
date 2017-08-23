@@ -1,9 +1,10 @@
 import * as path from 'path';
 import * as Logger from 'transport-logger';
 
-import { getConfig } from './schedule';
+import { Config } from './interfaces';
+import { configuration } from './config';
 
-const config = getConfig();
+const config: Config = configuration.get();
 
 let logFile = config.logFile || '/var/log/aquarium-control/log';
 if (!path.isAbsolute(logFile)) {
