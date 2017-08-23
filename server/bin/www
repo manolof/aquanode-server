@@ -27,6 +27,6 @@ try {
 }
 config.configPath = path.resolve(program.config);
 
-require('../dist/schedule.js').setConfig(config);
+require('../dist/config.js').configuration.set(config);
 require('../dist/server.js');
 require('../dist/controller.js');

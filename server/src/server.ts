@@ -3,12 +3,13 @@ import { Application, NextFunction, Request, Response } from 'express';
 import * as bodyParser from 'body-parser';
 import * as path from 'path';
 
-import { getConfig } from './schedule';
+import { Config } from './interfaces';
+import { configuration } from './config';
 import { logger } from './logger';
 import scheduleRoutes from './routes/schedule';
 import statusRoutes from './routes/status';
 
-const config = getConfig();
+const config: Config = configuration.get();
 
 export class Server {
 

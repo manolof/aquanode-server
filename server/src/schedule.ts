@@ -1,5 +1,6 @@
 import { existsSync, PathLike, readFileSync, writeFileSync } from 'fs';
 import * as path from 'path';
+import { configuration } from './config';
 
 import { Config, Program, Status } from './interfaces';
 
@@ -7,17 +8,11 @@ let schedulePath: PathLike;
 const status: Status = {
 	state: 'off'
 };
-
-let config: Config;
-export const getConfig = (): Config => {
-	return config;
-};
-
-export const setConfig = (contents: Config) => {
-	config = contents;
-};
+const callbacks: any = [];
 
 export const getSchedule = (): Program => {
+	const config: Config = configuration.get();
+
 	schedulePath = path.resolve(path.dirname(config.configPath as string), config.schedule);
 	if (!path.isAbsolute(schedulePath)) {
 		schedulePath = path.join(path.dirname(config.configPath as string), schedulePath);
@@ -37,7 +32,6 @@ export const getStatus = (): Status => {
 	return status;
 };
 
-const callbacks: any = [];
 export const onScheduleChanged = (cb) => {
 	callbacks.push(cb);
 };
