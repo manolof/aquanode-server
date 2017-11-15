@@ -3,7 +3,7 @@ const program = require('commander');
 const fs = require('fs');
 const path = require('path');
 
-const DEFAULT_CONFIG = 'conf/config.json';
+const DEFAULT_CONFIG = 'server/conf/config.json';
 
 program
 	.version(require('../package.json').version)
