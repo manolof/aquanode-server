@@ -1,9 +1,0 @@
-# Logs
-log/*
-*.log
-npm-debug.log*
-
-.DS_store
-node_modules
-
-dist
