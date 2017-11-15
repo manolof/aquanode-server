@@ -17,7 +17,4 @@ before_install:
   - sudo make install
 before_script:
   - npm install -g typescript
-env:
-  - PROJECT_DIR=$TRAVIS_BUILD_DIR/client
-  - PROJECT_DIR=$TRAVIS_BUILD_DIR/server
-script: cd $PROJECT_DIR && yarn && yarn build
+script: cd $TRAVIS_BUILD_DIR && yarn && yarn server:build && yarn client:build
