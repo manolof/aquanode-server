@@ -1,6 +1,4 @@
-/* tslint:disable */
-
-export class ScheduleItem {
+export interface ScheduleItem {
 	name: ScheduleState;
 	nextRunAt: Date;
 	lastRunAt: Date;

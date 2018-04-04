@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { pluck } from 'rxjs/operators';
 
 import { StatusService } from '../core/store/status/service';
 import { Status } from './status.model';
-import { pluck } from 'rxjs/operators';
 
 @Component({
 	selector: 'app-status',

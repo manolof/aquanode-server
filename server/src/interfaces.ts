@@ -1,12 +1,12 @@
 import { LightsConfig, LightsPins } from './lights/interfaces';
-import { SolenoidPins } from './solenoid/interfaces';
+import { RelayPins } from './relay/interfaces';
 
 interface Time {
 	hour: number;
 	minute: number;
 }
 
-interface Pins extends LightsPins, SolenoidPins {
+interface Pins extends LightsPins, RelayPins {
 }
 
 interface Database {

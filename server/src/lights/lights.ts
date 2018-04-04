@@ -123,7 +123,8 @@ export class Lights {
 
 		Object.keys(this.options.rgbLEDs)
 			.map((led) => {
-				this.options.rgbLEDs[led].pwmWrite(Switch.off);
+				this.options.rgbLEDs[led]
+					.pwmWrite(Switch.off);
 			});
 
 		this.count = Switch.off;

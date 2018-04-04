@@ -1,6 +1,4 @@
-/* tslint:disable */
-
-export class Status {
+export interface Status {
 	state: StatusState;
 	time: number;
 }

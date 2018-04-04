@@ -1,6 +1,6 @@
 import { Schedule } from '../src/interfaces';
 import { LightsStatus } from '../src/lights/interfaces';
-import { SolenoidStatus } from '../src/solenoid/interfaces';
+import { RelayStatus } from '../src/relay/interfaces';
 
 export const lightsSchedule: Schedule[] = [
 	{
@@ -32,13 +32,13 @@ export const solenoidSchedule: Schedule[] = [
 			hour: 7,
 			minute: 0
 		},
-		state: SolenoidStatus.on,
+		state: RelayStatus.on,
 	},
 	{
 		time: {
 			hour: 16,
 			minute: 30
 		},
-		state: SolenoidStatus.off,
+		state: RelayStatus.off,
 	},
 ];

@@ -1,7 +1,7 @@
 import { ScheduleItem } from '../../../schedule/schedule.model';
 import * as _action from './actions';
 
-interface State {
+interface State { // TODO chech schedule vs status implementation
 	loading: boolean;
 	schedule: ScheduleItem[];
 }
