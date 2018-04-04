@@ -1,20 +1,28 @@
-import * as express from 'express';
+import { JobAttributes } from 'agenda';
 import { Request, Response, Router } from 'express';
 
-import { getSchedule, setSchedule } from '../schedule';
+import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
+import { asyncMiddleware } from '../middleware/async';
 
-const router: Router = express.Router();
+const router: Router = Router();
 
-router.get('/schedule', (req: Request, res: Response) => {
+router.get('/schedule', asyncMiddleware(async (req: Request, res: Response) => {
 	logger.info('Serving the schedule');
-	res.send(getSchedule());
-});
+	const schedules = await LightsSchedule.getSchedules();
+
+	const extendedSchedule = schedules.map((job: JobAttributes) => {
+		const { name, nextRunAt, lastRunAt } = job;
+		return { name, nextRunAt, lastRunAt };
+	});
+
+	res.send(extendedSchedule);
+}));
 
 router.post('/schedule', (req: Request, res: Response) => {
 	logger.info('Updating the schedule');
-	setSchedule(req.body);
-	res.send(getSchedule());
+	// setSchedule(req.body);
+	// res.send(getSchedule());
 });
 
 export default router;

@@ -1,7 +1,7 @@
 /* tslint:disable:max-classes-per-file */
 
 import { Action } from '@ngrx/store';
-import { Schedule } from '../../../schedule/schedule.model';
+import { ScheduleItem } from '../../../schedule/schedule.model';
 
 export const GET_SCHEDULE = 'GET_SCHEDULE';
 export const GET_SCHEDULE_SUCCESS = 'GET_SCHEDULE Success';
@@ -17,7 +17,7 @@ export class GetScheduleAction implements Action {
 export class GetScheduleSuccessAction implements Action {
 	public readonly type = GET_SCHEDULE_SUCCESS;
 
-	constructor(public payload: Schedule) {
+	constructor(public payload: ScheduleItem[]) {
 	}
 }
 
@@ -31,14 +31,14 @@ export class GetScheduleFailAction implements Action {
 export class SetScheduleAction implements Action {
 	public readonly type = SET_SCHEDULE;
 
-	constructor(public payload: Schedule) {
+	constructor(public payload: ScheduleItem[]) {
 	}
 }
 
 export class SetScheduleSuccessAction implements Action {
 	public readonly type = SET_SCHEDULE_SUCCESS;
 
-	constructor(public payload: Schedule) {
+	constructor(public payload: ScheduleItem[]) {
 	}
 }
 

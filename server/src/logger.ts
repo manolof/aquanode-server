@@ -1,34 +1,24 @@
-import * as path from 'path';
-import * as Logger from 'transport-logger';
+import * as winston from 'winston';
 
-import { Config } from './interfaces';
-import { configuration } from './config';
+import { CONFIG } from '../conf/config';
 
-const config: Config = configuration.get();
-
-let logFile = config.logFile || '/var/log/aquarium-control/log';
-if (!path.isAbsolute(logFile)) {
-	logFile = path.join(path.dirname(config.configPath as string), logFile);
-}
-
-export const logger = logFile ?
-	new Logger([{
-		destination: logFile,
-		minLevel: 'info',
-		timestamp: true,
-		prependLevel: true,
-		colorize: false,
-		maxLines: 200
-	}, {
-		minLevel: 'trace',
-		timestamp: true,
-		prependLevel: true,
-		colorize: true
-	}])
-	:
-	new Logger({
-		minLevel: 'trace',
-		timestamp: true,
-		prependLevel: true,
-		colorize: true
-	});
+export const logger = new winston.Logger({
+	transports: [
+		new winston.transports.File({
+			level: 'info',
+			filename: CONFIG.logFile,
+			handleExceptions: true,
+			json: true,
+			maxsize: 5242880, // 5MB
+			maxFiles: 5,
+			colorize: false
+		}),
+		new winston.transports.Console({
+			level: 'debug',
+			handleExceptions: true,
+			json: false,
+			colorize: true
+		})
+	],
+	exitOnError: false
+});

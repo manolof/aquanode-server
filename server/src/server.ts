@@ -1,30 +1,42 @@
-import * as express from 'express';
-import { Application, NextFunction, Request, Response } from 'express';
 import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
+import * as errorHandler from 'errorhandler';
+import * as express from 'express';
 import * as path from 'path';
 
-import { Config } from './interfaces';
-import { configuration } from './config';
+import { CONFIG } from '../conf/config';
+import { LightsSchedule } from './lights/schedule';
 import { logger } from './logger';
 import scheduleRoutes from './routes/schedule';
 import statusRoutes from './routes/status';
 
-const config: Config = configuration.get();
+// import { SolenoidSchedule } from './solenoid/schedule';
 
 export class Server {
-
-	public app: Application;
+	public app: express.Application;
 
 	constructor() {
 		this.app = express();
 
 		this.config();
 
+		this.runSchedules();
+
 		this.routes();
 	}
 
+	public listen() {
+		this.app.listen(this.app.get('port'), () => {
+			logger.info(`App is running at http://localhost:${this.app.get('port')} in ${this.app.get('env')} mode`);
+			logger.info('Press CTRL-C to stop\n');
+		});
+	}
+
 	private config() {
-		this.app.use(this.allowCrossDomain);
+		this.app.set('port', CONFIG.port);
+
+		// Enable cors for all routes and origins
+		this.app.use(cors());
 
 		this.app.use(bodyParser.json());
 
@@ -34,27 +46,18 @@ export class Server {
 
 		this.app.use(express.static(path.join(__dirname, '..', '..', 'client', 'dist')));
 
-		this.app.use((error: any, request: Request, response: Response, next: NextFunction) => {
-			error.status = 404;
-			next(error);
-		});
+		this.app.use(errorHandler());
+	}
+
+	private runSchedules() {
+		LightsSchedule.run();
+		// SolenoidSchedule.run();
 	}
 
 	private routes() {
-		this.app.use('/api', scheduleRoutes);
 		this.app.use('/api', statusRoutes);
+		this.app.use('/api', scheduleRoutes);
 	}
-
-	private allowCrossDomain = (request: Request, response: Response, next: NextFunction) => {
-		response.header('Access-Control-Allow-Origin', '*');
-		response.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-		response.header('Access-Control-Allow-Headers', 'Content-Type');
-
-		next();
-	};
 }
 
-const server = new Server().app.listen(config.port || 80, () => {
-	const port = server.address().port;
-	logger.info('Aquanode server listening on port ' + port);
-});
+new Server().listen();

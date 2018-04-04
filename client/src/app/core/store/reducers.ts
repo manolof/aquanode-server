@@ -1,7 +1,7 @@
 import { ActionReducerMap } from '@ngrx/store';
 
-import { statusReducer } from './status/reducer';
 import { scheduleReducer } from './schedule/reducer';
+import { statusReducer } from './status/reducer';
 
 import { Status } from '../../status/status.model';
 

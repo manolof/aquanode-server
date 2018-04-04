@@ -3,31 +3,11 @@
     "tslint:recommended",
     "tslint-eslint-rules"
   ],
-  "rulesDirectory": [
-    "../node_modules/codelyzer"
-  ],
   "rules": {
     // tslint-eslint
     "array-bracket-spacing": [true, "never"],
     "brace-style": [true, "stroustrup"],
     "object-curly-spacing": [true, "always"],
-    // Angular - codelyzer
-    "component-class-suffix": true,
-    "component-selector": [true, "element", "app", "kebab-case"],
-    "directive-class-suffix": true,
-    "directive-selector": [true, "attribute", "app", "camelCase"],
-    "import-destructuring-spacing": true,
-    "no-attribute-parameter-decorator": true,
-    "no-forward-ref": true,
-    "no-input-rename": true,
-    "no-output-on-prefix": true,
-    "no-output-rename": true,
-    "pipe-naming": [true, "camelCase"],
-    "use-host-property-decorator": true,
-    "use-input-property-decorator": true,
-    "use-life-cycle-interface": true,
-    "use-output-property-decorator": true,
-    "use-pipe-transform-interface": true,
     // General
     "no-non-null-assertion": true,
     "no-switch-case-fall-through": true,

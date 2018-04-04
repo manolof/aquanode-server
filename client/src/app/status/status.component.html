@@ -1,35 +1,33 @@
-<md-card>
-	<md-card-header>
-		<md-card-title>
+<mat-card>
+	<mat-card-header>
+		<mat-card-title>
 			<h2>Status</h2>
-		</md-card-title>
-	</md-card-header>
+		</mat-card-title>
+	</mat-card-header>
 
-	<md-card-content>
-		<md-list>
-			<md-list-item>
-				<md-icon md-list-icon>schedule</md-icon>
-				<h4 md-line>Time</h4>
-				<p md-line> {{(status$ | async).time | date:'medium'}}</p>
-			</md-list-item>
+	<mat-card-content>
+		<ng-container *ngIf="isLoading$ | async; else loaded">
 
-			<md-list-item>
-				<md-icon md-list-icon>brightness_4</md-icon>
-				<h4 md-line>State</h4>
-				<p md-line> {{(status$ | async).state}}</p>
-			</md-list-item>
+			<mat-spinner [color]="'accent'"></mat-spinner>
 
-			<md-list-item>
-				<md-icon md-list-icon>schedule</md-icon>
-				<h4 md-line>Next transition time</h4>
-				<p md-line> {{(status$ | async).nextTransitionTime | date:'medium'}}</p>
-			</md-list-item>
+		</ng-container>
 
-			<md-list-item>
-				<md-icon md-list-icon>brightness_4</md-icon>
-				<h4 md-line>Next transition state</h4>
-				<p md-line> {{(status$ | async).nextTransitionState}}</p>
-			</md-list-item>
-		</md-list>
-	</md-card-content>
-</md-card>
+		<ng-template #loaded>
+
+			<mat-list>
+				<mat-list-item>
+					<mat-icon mat-list-icon>schedule</mat-icon>
+					<h4 mat-line>Time</h4>
+					<p mat-line> {{(status$ | async).time | date:'medium'}}</p>
+				</mat-list-item>
+
+				<mat-list-item>
+					<mat-icon mat-list-icon>brightness_4</mat-icon>
+					<h4 mat-line>State</h4>
+					<p mat-line> {{(status$ | async).state}}</p>
+				</mat-list-item>
+			</mat-list>
+
+		</ng-template>
+	</mat-card-content>
+</mat-card>

@@ -1,5 +1,5 @@
-import * as _action from './actions';
 import { Status } from '../../../status/status.model';
+import * as _action from './actions';
 
 interface State extends Status {
 	loading: boolean;
@@ -7,10 +7,8 @@ interface State extends Status {
 
 export const initialStatusState: State = {
 	loading: true,
-	time: 0,
-	state: 'off',
-	nextTransitionTime: 0,
-	nextTransitionState: 'off',
+	time: null,
+	state: 'day',
 };
 
 export function statusReducer(state: State = initialStatusState, action: _action.StatusActions): State {

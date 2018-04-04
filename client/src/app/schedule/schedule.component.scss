@@ -2,11 +2,16 @@
 
 :host {
 	display: block;
-	padding: $mat-menu-side-padding;
+	margin: 50px;
+	//padding: $mat-menu-side-padding;
 
-	& /deep/ md-list,
-	& /deep/ md-button-toggle-group {
+	& /deep/ mat-list,
+	& /deep/ mat-button-toggle-group {
 		padding: 0;
-		margin: $mat-menu-side-padding;
+		//margin: $mat-menu-side-padding;
 	}
+}
+
+mat-list.past {
+	background-color: mat-color($mat-gray, 300);
 }
