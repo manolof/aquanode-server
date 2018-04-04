@@ -3,6 +3,9 @@
     "module": "commonjs",
     "outDir": "dist",
     "removeComments": true,
+    "lib": [
+      "es6"
+    ],
     "target": "es5"
   },
   "include": [

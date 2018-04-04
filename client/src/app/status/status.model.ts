@@ -1,10 +1,8 @@
 /* tslint:disable */
 
 export class Status {
-	time: number;
 	state: StatusState;
-	nextTransitionTime: number;
-	nextTransitionState: StatusState;
+	time: number;
 }
 
-type StatusState = 'day' | 'night' | 'off';
+type StatusState = 'day' | 'night';

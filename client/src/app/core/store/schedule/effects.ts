@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs/observable/of';
 import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/startWith';
 import 'rxjs/add/operator/switchMap';
-import 'rxjs/add/operator/mergeMap';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 
+import { MatSnackBar } from '@angular/material';
+import { ScheduleItem } from '../../../schedule/schedule.model';
 import * as action from './actions';
 import { ScheduleService } from './service';
-import { Schedule } from '../../../schedule/schedule.model';
-import { MdSnackBar } from '@angular/material';
 
 @Injectable()
 export class ScheduleEffects {
@@ -18,7 +18,7 @@ export class ScheduleEffects {
 	public get$: Observable<any> = this.actions$
 		.ofType(action.GET_SCHEDULE)
 		.switchMap(() => this.scheduleService.getSchedule())
-		.mergeMap((res: Schedule) => {
+		.mergeMap((res: ScheduleItem[]) => {
 			return of(
 				new action.GetScheduleSuccessAction(res),
 			);
@@ -32,10 +32,10 @@ export class ScheduleEffects {
 	@Effect()
 	public set$: Observable<any> = this.actions$
 		.ofType(action.SET_SCHEDULE)
-		.map((action: action.SetScheduleAction) => action.payload)
-		.switchMap((res) => this.scheduleService.setSchedule(res))
-		.mergeMap((res: Schedule) => {
-			this.openSnackBar(`Success - Mode: ${res.mode}, State: ${res.overrideState}`);
+		.map((_action: action.SetScheduleAction) => _action.payload)
+		.switchMap((res: ScheduleItem[]) => this.scheduleService.setSchedule(res))
+		.mergeMap((res: ScheduleItem[]) => {
+			// this.openSnackBar(`Success - Mode: ${res.mode}, State: ${res.overrideState}`);
 			return of(
 				new action.SetScheduleSuccessAction(res),
 			);
@@ -48,7 +48,7 @@ export class ScheduleEffects {
 
 	constructor(private actions$: Actions,
 				private scheduleService: ScheduleService,
-				private snackBar: MdSnackBar) {
+				private snackBar: MatSnackBar) {
 	}
 
 	private openSnackBar(message: string) {

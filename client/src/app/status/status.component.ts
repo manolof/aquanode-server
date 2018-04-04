@@ -3,6 +3,7 @@ import { Observable } from 'rxjs/Observable';
 
 import { StatusService } from '../core/store/status/service';
 import { Status } from './status.model';
+import { pluck } from 'rxjs/operators';
 
 @Component({
 	selector: 'app-status',
@@ -13,6 +14,10 @@ export class StatusComponent implements OnInit {
 	public status$: Observable<Status>;
 
 	constructor(private statusService: StatusService) {
+	}
+
+	public get isLoading$(): Observable<boolean> {
+		return this.statusService.status$.pipe(pluck('loading'));
 	}
 
 	public ngOnInit() {

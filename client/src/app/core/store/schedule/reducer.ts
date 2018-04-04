@@ -1,14 +1,13 @@
+import { ScheduleItem } from '../../../schedule/schedule.model';
 import * as _action from './actions';
-import { Schedule } from '../../../schedule/schedule.model';
 
-interface State extends Schedule {
+interface State {
 	loading: boolean;
+	schedule: ScheduleItem[];
 }
 
 export const initialScheduleState: State = {
 	loading: true,
-	mode: 'override',
-	overrideState: 'off',
 	schedule: [],
 };
 
@@ -17,14 +16,14 @@ export function scheduleReducer(state: State = initialScheduleState, action: _ac
 		case _action.GET_SCHEDULE: {
 			return {
 				...state,
-				loading: true
+				loading: true,
 			};
 		}
 
 		case _action.GET_SCHEDULE_SUCCESS: {
 			return {
-				...action.payload,
 				loading: false,
+				schedule: action.payload,
 			};
 		}
 
@@ -37,15 +36,15 @@ export function scheduleReducer(state: State = initialScheduleState, action: _ac
 
 		case _action.SET_SCHEDULE: {
 			return {
-				...action.payload,
-				loading: true
+				loading: true,
+				schedule: action.payload,
 			};
 		}
 
 		case _action.SET_SCHEDULE_SUCCESS: {
 			return {
-				...action.payload,
 				loading: false,
+				schedule: action.payload,
 			};
 		}
 

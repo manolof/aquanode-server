@@ -1,55 +1,33 @@
-import { PathLike } from 'fs';
-
-export class Status {
-	state: StatusState;
-	time?: number;
-	nextTransitionTime?: number;
-	nextTransitionState?: StatusState;
-}
-
-type StatusState = 'day' | 'night' | 'off' | 'midnight reschedule';
-
-export interface Program {
-	mode: string;
-	overrideState: string;
-	schedule: Schedule[];
-}
-
-interface Schedule {
-	name: string;
-	type: string;
-	time: Time;
-	state: string;
-}
+import { LightsConfig, LightsPins } from './lights/interfaces';
+import { SolenoidPins } from './solenoid/interfaces';
 
 interface Time {
 	hour: number;
 	minute: number;
 }
 
-export interface Config {
-	configPath?: PathLike;
+interface Pins extends LightsPins, SolenoidPins {
+}
+
+interface Database {
+	name: string;
+	connectionString: string;
+	collection: string;
+}
+
+export interface Schedule {
+	time: Time;
+	state: string;
+}
+
+export interface Config extends LightsConfig {
 	port: number;
 	pins: Pins;
-	fadeDuration: number;
-	schedule: string;
 	logFile: string;
-	luminosity: Luminosity;
-	rgbSpectrum: RgbSpectrum;
+	database: Database;
 }
 
-interface Pins {
-	white: string;
-	red: string;
-	green: string;
-	blue: string;
-}
-
-interface Luminosity {
-	start: number;
-	end: number;
-}
-
-interface RgbSpectrum {
-	[key: string]: number;
+export enum Switch {
+	off,
+	on,
 }

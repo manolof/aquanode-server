@@ -1,17 +1,18 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
+import { Observable } from 'rxjs/Observable';
 
+import { environment } from '../../../../environments/environment';
+import { Status } from '../../../status/status.model';
 import { IAppState } from '../reducers';
 import * as action from './actions';
-import { Status } from '../../../status/status.model';
 
 @Injectable()
 export class StatusService {
 
-	constructor(private http: Http,
+	constructor(private http: HttpClient,
 				private store: Store<IAppState>) {
 	}
 
@@ -24,7 +25,6 @@ export class StatusService {
 	}
 
 	public getStatus(): Observable<Status> {
-		return this.http.get(`/api/status`)
-			.map((res: Response) => res.json());
+		return this.http.get<Status>(`${environment.endpoint}/status`);
 	}
 }
