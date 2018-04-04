@@ -1,6 +1,7 @@
 /* tslint:disable:max-classes-per-file */
 
 import { Action } from '@ngrx/store';
+
 import { ScheduleItem } from '../../../schedule/schedule.model';
 
 export const GET_SCHEDULE = 'GET_SCHEDULE';

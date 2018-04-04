@@ -1,5 +1,5 @@
 /* tslint:disable */
-import { SolenoidStatus } from './interfaces';
+import { RelayStatus } from './interfaces';
 
 const Gpio = process.env.NODE_ENV === 'development' ?
 	require('pigpio-mock').Gpio :
@@ -8,28 +8,28 @@ const Gpio = process.env.NODE_ENV === 'development' ?
 
 import { CONFIG } from '../../conf/config';
 import { Switch } from '../interfaces';
-// import { SolenoidStatus } from './interfaces';
+// import { RelayStatus } from './interfaces';
 import { logger } from '../logger';
 // import { status } from '../status';
 
-export class Solenoid {
+export class Relay {
 	public static setState(state: string) {
-		const solenoid = new Solenoid();
+		const solenoid = new Relay();
 
 		switch (state) {
-			case SolenoidStatus.on:
+			case RelayStatus.on:
 				solenoid.setOn();
 				break;
-			case SolenoidStatus.off:
+			case RelayStatus.off:
 				solenoid.setOff();
 				break;
 			default:
 				logger.error(`A solenoid change was requested for an invalid state ${state}.
-				Must be one of ${SolenoidStatus.on}, or ${SolenoidStatus.off}`);
+				Must be one of ${RelayStatus.on}, or ${RelayStatus.off}`);
 		}
 	}
 
-	private static instance: Solenoid;
+	private static instance: Relay;
 	private options;
 
 	constructor() {
@@ -37,24 +37,24 @@ export class Solenoid {
 			solenoid: new Gpio(CONFIG.pins.solenoid, { mode: Gpio.OUTPUT }),
 		};
 
-		if (!Solenoid.instance) {
-			Solenoid.instance = this;
+		if (!Relay.instance) {
+			Relay.instance = this;
 		}
 
-		return Solenoid.instance;
+		return Relay.instance;
 	}
 
 	public setOn() {
-		// status.set(SolenoidStatus.day);
-		this.setSolenoid(Switch.on);
+		// status.set(RelayStatus.day);
+		this.setRelay(Switch.on);
 	}
 
 	public setOff() {
-		// status.set(SolenoidStatus.off);
-		this.setSolenoid(Switch.off);
+		// status.set(RelayStatus.off);
+		this.setRelay(Switch.off);
 	}
 
-	private setSolenoid(mode: number) {
+	private setRelay(mode: number) {
 		this.options.solenoid.digitalWrite(mode);
 	}
 }

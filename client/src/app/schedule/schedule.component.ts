@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import 'rxjs/add/operator/take';
 import { Observable } from 'rxjs/Observable';
+import { pluck } from 'rxjs/operators';
 
 import { ScheduleService } from '../core/store/schedule/service';
 import { ScheduleItem } from './schedule.model';
-import { pluck } from 'rxjs/operators';
 
 @Component({
 	selector: 'app-schedule',

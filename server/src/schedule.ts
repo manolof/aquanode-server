@@ -5,6 +5,25 @@ import { CONFIG } from '../conf/config';
 import { Schedule } from './interfaces';
 
 export abstract class BaseSchedule {
+	public static async getSchedules(): Promise<any> {
+		return new Promise((resolve, reject) => {
+
+			// Get the documents collection
+			const collection = this.db.collection(CONFIG.database.collection);
+
+			// Find some documents
+			return collection.find({}).toArray((err, docs) => {
+				if (err) {
+					reject(err);
+				}
+				else {
+					resolve(docs);
+				}
+			});
+
+		});
+	}
+
 	protected static async run(): Promise<void> {
 		const client = await MongoClient.connect(CONFIG.database.connectionString);
 		this.db = client.db(CONFIG.database.name);
@@ -55,25 +74,6 @@ export abstract class BaseSchedule {
 		// `start()` is how you tell agenda to start processing jobs. If you just
 		// want to produce (AKA schedule) jobs then don't call `start()`
 		this.agenda.start();
-	}
-
-	protected static getSchedules(): Promise<any> {
-		return new Promise((resolve, reject) => {
-
-			// Get the documents collection
-			const collection = this.db.collection(CONFIG.database.collection);
-
-			// Find some documents
-			return collection.find({}).toArray((err, docs) => {
-				if (err) {
-					reject(err);
-				}
-				else {
-					resolve(docs);
-				}
-			});
-
-		});
 	}
 
 	private static agenda: Agenda;

@@ -12,9 +12,6 @@ export class LightsSchedule extends BaseSchedule {
 		this.startClosestPastEvent(lightsSchedule);
 	}
 
-	public static async getSchedules() {
-		return await super.getSchedules();
-	}
 }
 
 /*

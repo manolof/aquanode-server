@@ -1,7 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import 'rxjs/add/operator/map';
 import { Observable } from 'rxjs/Observable';
 
 import { environment } from '../../../../environments/environment';

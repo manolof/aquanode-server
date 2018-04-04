@@ -1,11 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
-import 'rxjs/add/observable/of';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/switchMap';
 import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
+import { catchError, mergeMap, switchMap } from 'rxjs/operators';
 
 import { Status } from '../../../status/status.model';
 import * as action from './actions';
@@ -16,15 +13,17 @@ export class StatusEffects {
 	@Effect()
 	public get$: Observable<any> = this.actions$
 		.ofType(action.GET_STATUS)
-		.switchMap(() => this.statusService.getStatus())
-		.mergeMap((res: Status) =>
-			Observable.of(
-				new action.GetStatusSuccessAction(res),
+		.pipe(
+			switchMap(() => this.statusService.getStatus()),
+			mergeMap((res: Status) =>
+				of(
+					new action.GetStatusSuccessAction(res),
+				),
 			),
-		)
-		.catch((err: Error) =>
-			Observable.of(
-				new action.GetStatusFailAction(err),
+			catchError((err: Error) =>
+				of(
+					new action.GetStatusFailAction(err),
+				),
 			),
 		);
 
