@@ -1,8 +1,4 @@
-export interface ScheduleItem {
-	name: ScheduleState;
-	nextRunAt: Date;
-	lastRunAt: Date;
-}
+import { JobAttributes } from 'agenda';
 
-// export type ScheduleMode = 'program' | 'override';
-export type ScheduleState = 'day' | 'night';
+export interface ScheduleItem extends JobAttributes {
+}

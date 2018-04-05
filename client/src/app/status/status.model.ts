@@ -1,6 +1,9 @@
 export interface Status {
-	state: StatusState;
 	time: number;
+	entities: Entity[];
 }
 
-type StatusState = 'day' | 'night';
+interface Entity {
+	type: string;
+	status: string;
+}
