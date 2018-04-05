@@ -13,15 +13,3 @@ export class LightsSchedule extends BaseSchedule {
 	}
 
 }
-
-/*
-export const findDocuments = function(db, callback) {
-	// Get the documents collection
-	const collection = db.collection('schedules');
-	// Find some documents
-	collection.find({}).toArray(function(err, docs) {
-		callback(docs);
-	});
-};
-
- */

@@ -7,10 +7,9 @@ import * as path from 'path';
 import { CONFIG } from '../conf/config';
 import { LightsSchedule } from './lights/schedule';
 import { logger } from './logger';
+import { RelaySchedule } from './relay/schedule';
 import scheduleRoutes from './routes/schedule';
 import statusRoutes from './routes/status';
-
-// import { RelaySchedule } from './relay/schedule';
 
 export class Server {
 	public app: express.Application;
@@ -51,7 +50,7 @@ export class Server {
 
 	private runSchedules() {
 		LightsSchedule.run();
-		// RelaySchedule.run();
+		RelaySchedule.run();
 	}
 
 	private routes() {

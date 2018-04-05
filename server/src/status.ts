@@ -1,20 +1,17 @@
-import { LightsStatus } from './lights/interfaces';
 import { logger } from './logger';
 
-class Status {
-	private _status: LightsStatus;
+export class Status {
+	private _status: string;
 
 	constructor(private id: string) {
 	}
 
 	public get(): string {
-		return LightsStatus[this._status];
+		return this._status;
 	}
 
-	public set(value: LightsStatus) {
-		logger.info(`Setting the "${this.id}" state to`, LightsStatus[value]);
+	public set(value: string) {
+		logger.info(`Setting the ${this.id} to state "${value}"`);
 		this._status = value;
 	}
 }
-
-export const status = new Status('lights');
