@@ -9,8 +9,8 @@ import { CONFIG } from '../../conf/config';
 import { Switch } from '../interfaces';
 import { Interval } from '../interval';
 import { logger } from '../logger';
-import { status } from '../status';
 import { Fade, LightsStatus } from './interfaces';
+import status from './status';
 
 export class Lights {
 	public static setState(state: string) {
@@ -34,8 +34,8 @@ export class Lights {
 	}
 
 	public static shutdown() {
-		pigpio.terminate();
 		logger.info('Shutting the lights down, cleanup running.');
+		pigpio.terminate();
 		process.exit(0);
 	}
 

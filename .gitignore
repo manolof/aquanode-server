@@ -2,10 +2,11 @@
 
 # compiled output
 dist
-tmp
+/tmp
+/out-tsc
 
 # dependencies
-node_modules
+/node_modules
 
 # IDEs and editors
 /.idea
@@ -14,6 +15,7 @@ node_modules
 .c9/
 *.launch
 .settings/
+*.sublime-workspace
 
 # IDE - VSCode
 .vscode/*
@@ -23,19 +25,19 @@ node_modules
 !.vscode/extensions.json
 
 # misc
-.sass-cache
-connect.lock
-coverage/*
-libpeerconnection.log
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
 npm-debug.log
 testem.log
-typings
-log
+/typings
+*.log
 
 # e2e
-e2e/*.js
-e2e/*.map
+/e2e/*.js
+/e2e/*.map
 
-#System Files
+# System Files
 .DS_Store
 Thumbs.db
