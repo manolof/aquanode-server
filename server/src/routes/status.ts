@@ -8,8 +8,16 @@ const router: Router = Router();
 router.get('/status', (req: Request, res: Response) => {
 	const extendedStatus = {
 		time: Date.now(),
-		lights: lightsStatus.get(),
-		relay: relayStatus.get(),
+		entities: [
+			{
+				type: 'lights',
+				status: lightsStatus.get(),
+			},
+			{
+				type: 'relay',
+				status: relayStatus.get(),
+			},
+		],
 	};
 
 	res.send(extendedStatus);

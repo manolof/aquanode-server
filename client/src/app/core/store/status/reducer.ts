@@ -8,7 +8,7 @@ interface State extends Status {
 export const initialStatusState: State = {
 	loading: true,
 	time: null,
-	state: 'day',
+	entities: [],
 };
 
 export function statusReducer(state: State = initialStatusState, action: _action.StatusActions): State {
