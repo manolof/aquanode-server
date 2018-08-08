@@ -16,6 +16,6 @@ Lighting is fading in and out between day and night settings, by the specified s
 
 > One the server-side it features [Node.js](https://nodejs.org/), [Express.js](https://expressjs.com/), [pigpio](https://github.com/fivdi/pigpio), [TypeScript](http://www.typescriptlang.org/), [@types](https://www.npmjs.com/~types), [TSLint](http://palantir.github.io/tslint/).
 
-- [ ] TSLint on server-side
+- [x] TSLint on server-side
 - [ ] Unit tests
 - [x] mock pigpio library
