@@ -1,6 +1,6 @@
 export class Interval {
-	private fn: any;
-	private time: number;
+	private readonly fn: any;
+	private readonly time: number;
 	private timer: boolean | any;
 
 	constructor(fn, time) {

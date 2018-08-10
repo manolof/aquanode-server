@@ -28,8 +28,16 @@ export class Relay {
 	}
 
 	public static shutdown() {
-		logger.info('Shutting the relay down, cleanup running.');
-		pigpio.terminate();
+		logger.info('Shutting the relay down, cleanup running');
+
+		try {
+			pigpio.terminate();
+		}
+		catch (e) {
+			// fails on dev, since `pigpio`'s prototype doesn't contain `terminate()`
+			logger.warn(e);
+		}
+
 		process.exit(0);
 	}
 
