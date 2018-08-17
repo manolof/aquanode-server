@@ -36,8 +36,8 @@ function routes(app) {
 }
 
 function runSchedules() {
-	LightsSchedule.run();
-	// RelaySchedule.run();
+	LightsSchedule.init();
+	// RelaySchedule.init();
 }
 
 export {

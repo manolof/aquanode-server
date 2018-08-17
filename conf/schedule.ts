@@ -6,7 +6,7 @@ export const lightsSchedule: Schedule[] = [
 	{
 		time: {
 			hour: 0,
-			minute: 1
+			minute: 0
 		},
 		state: LightsStatus.night,
 	},
@@ -29,6 +29,13 @@ export const lightsSchedule: Schedule[] = [
 export const relaySchedule: Schedule[] = [
 	{
 		time: {
+			hour: 0,
+			minute: 0
+		},
+		state: RelayStatus.off,
+	},
+	{
+		time: {
 			hour: 7,
 			minute: 0
 		},
@@ -36,8 +43,8 @@ export const relaySchedule: Schedule[] = [
 	},
 	{
 		time: {
-			hour: 16,
-			minute: 30
+			hour: 17,
+			minute: 0
 		},
 		state: RelayStatus.off,
 	},

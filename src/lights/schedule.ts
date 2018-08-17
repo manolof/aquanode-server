@@ -4,13 +4,14 @@ import { LightsStatus } from './interfaces';
 import { Lights } from './lights';
 
 export class LightsSchedule extends BaseSchedule {
-	public static async run() {
-		await super.run();
-
-		await this.setSchedules(lightsSchedule, (state: LightsStatus) => {
+	public static init() {
+		this.setSchedules(lightsSchedule, (state: LightsStatus) => {
 			Lights.setState(state);
 		});
-		this.startClosestPastEvent(lightsSchedule);
+
+		this.startClosestPastEvent(lightsSchedule, (state: LightsStatus) => {
+			Lights.setState(state);
+		});
 	}
 
 }
