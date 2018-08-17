@@ -9,12 +9,6 @@ interface Time {
 interface Pins extends LightsPins, RelayPins {
 }
 
-interface Database {
-	name: string;
-	connectionString: string;
-	collection: string;
-}
-
 export type CombinedStatus = LightsStatus | RelayStatus;
 
 export interface Schedule {
@@ -26,5 +20,4 @@ export interface Config extends LightsConfig {
 	port: number;
 	pins: Pins;
 	logFile: string;
-	database: Database;
 }

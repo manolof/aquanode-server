@@ -5,14 +5,15 @@ jest.mock('./logger');
 
 describe('Status', () => {
 	let mockStatus: Status;
+	const mockStatusId = 'mock1';
 
 	beforeAll(() => {
-		mockStatus = new Status('mock1');
+		mockStatus = new Status(mockStatusId);
 	});
 
 	it('should set the status for a particular item', () => {
 		mockStatus.set('ON');
-		expect(logger.info).toHaveBeenCalledWith('Setting the mock1 to state "ON"');
+		expect(logger.info).toHaveBeenCalledWith(`Setting the ${mockStatusId} to state "ON"`);
 	});
 
 	it('should get the status for a particular item', () => {
