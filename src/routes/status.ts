@@ -23,7 +23,11 @@ router.get('/status', (req: Request, res: Response) => {
 		],
 	};
 
-	res.send(extendedStatus);
+	res.send(
+		{
+			data: extendedStatus,
+		},
+	);
 });
 
 export default router;

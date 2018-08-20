@@ -9,7 +9,6 @@
     "start": "ts-node src/server.ts",
     "start:prod": "tsc && pm2 start ./dist/src/server.js",
     "start:dev": "cross-env NODE_ENV=development ./node_modules/nodemon/bin/nodemon.js -e ts -w ./src -x \"npm run start\"",
-    "postinstall": "pm2 install typescript",
     "lint": "tslint src/**/*.ts --fix"
   },
   "devDependencies": {
