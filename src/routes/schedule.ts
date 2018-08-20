@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express';
 
+import { LightsStatus } from '../lights/interfaces';
 import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
 
@@ -7,15 +8,36 @@ const router: Router = Router();
 
 router.get('/schedule', (req: Request, res: Response) => {
 	logger.info('Serving the schedule');
-	const schedules = LightsSchedule.getSchedules();
 
-	res.send(schedules);
+	res.send(
+		{
+			data: LightsSchedule.getSchedules(),
+		},
+	);
 });
 
 router.post('/schedule', (req: Request, res: Response) => {
 	logger.info('Updating the schedule');
-	// setSchedule(req.body);
-	// res.send(getSchedule());
+
+	LightsSchedule.forceSchedule(req.body.schedule as LightsStatus);
+
+	res.send(
+		{
+			data: LightsSchedule.getSchedules(),
+		},
+	);
+});
+
+router.post('/schedule/reset', (req: Request, res: Response) => {
+	logger.info('Resetting the schedule');
+
+	LightsSchedule.resetSchedule();
+
+	res.send(
+		{
+			data: LightsSchedule.getSchedules(),
+		},
+	);
 });
 
 export default router;

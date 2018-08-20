@@ -1,5 +1,6 @@
 import { relaySchedule } from '../../conf/schedule';
 import { BaseSchedule } from '../schedule';
+// import { RelayStatus } from './interfaces';
 import { Relay } from './relay';
 
 export class RelaySchedule extends BaseSchedule {
@@ -12,5 +13,18 @@ export class RelaySchedule extends BaseSchedule {
 			Relay.setState(state);
 		});
 	}
+
+	// TODO
+	// public static forceSchedule(state: RelayStatus): void {
+	// 	this.cancelAllJobs();
+	//
+	// 	Relay.setState(state);
+	// }
+	//
+	// public static resetSchedule(): void {
+	// 	this.cancelAllJobs();
+	//
+	// 	this.init();
+	// }
 
 }

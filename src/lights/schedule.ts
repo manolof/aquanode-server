@@ -14,4 +14,16 @@ export class LightsSchedule extends BaseSchedule {
 		});
 	}
 
+	public static forceSchedule(state: LightsStatus): void {
+		this.cancelAllJobs();
+
+		Lights.setState(state);
+	}
+
+	public static resetSchedule(): void {
+		this.cancelAllJobs();
+
+		this.init();
+	}
+
 }

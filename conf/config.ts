@@ -1,7 +1,7 @@
 import { Config } from '../src/interfaces';
 
 export const CONFIG: Config = {
-	port: 3000,
+	port: 3003,
 	pins: {
 		white: 18,
 		red: 17,
