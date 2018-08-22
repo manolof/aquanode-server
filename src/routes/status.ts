@@ -10,7 +10,7 @@ router.get('/status', (req: Request, res: Response) => {
 	logger.info('Serving the status');
 
 	const extendedStatus = {
-		time: new Date().toString(),
+		time: new Date().toISOString(),
 		entities: [
 			{
 				type: 'lights',
