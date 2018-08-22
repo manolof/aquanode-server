@@ -15,24 +15,24 @@ config(app);
 runSchedules();
 routes(app);
 
-function config(app) {
-	app.set('port', CONFIG.port);
+function config(_app) {
+	_app.set('port', CONFIG.port);
 
 	// Enable cors for all routes and origins
-	app.use(cors());
+	_app.use(cors());
 
-	app.use(bodyParser.json());
+	_app.use(bodyParser.json());
 
-	app.use(bodyParser.urlencoded({
+	_app.use(bodyParser.urlencoded({
 		extended: false,
 	}));
 
-	app.use(errorHandler());
+	_app.use(errorHandler());
 }
 
-function routes(app) {
-	app.use('/api', statusRoutes);
-	app.use('/api', scheduleRoutes);
+function routes(_app) {
+	_app.use('/api', statusRoutes);
+	_app.use('/api', scheduleRoutes);
 }
 
 function runSchedules() {
