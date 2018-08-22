@@ -39,7 +39,7 @@ export abstract class BaseSchedule {
 					(fireDate) => {
 						callback(x.state);
 
-						logger.info('This job was supposed to run at ' + fireDate + ', but actually ran at ' + new Date());
+						logger.info('This job was supposed to run at ' + fireDate + ', but actually ran at ' + Date.now());
 					},
 				),
 			);
