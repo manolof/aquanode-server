@@ -2,22 +2,25 @@ import * as winston from 'winston';
 
 import { CONFIG } from '../conf/config';
 
-export const logger = new winston.Logger({
+export const logger = winston.createLogger({
 	transports: [
 		new winston.transports.File({
 			level: 'info',
 			filename: CONFIG.logFile,
 			handleExceptions: true,
-			json: true,
 			maxsize: 5242880, // 5MB
 			maxFiles: 5,
-			colorize: false
+			format: winston.format.combine(
+				winston.format.splat(),
+			),
 		}),
 		new winston.transports.Console({
 			level: 'debug',
 			handleExceptions: true,
-			json: false,
-			colorize: true
+			format: winston.format.combine(
+				winston.format.splat(),
+				winston.format.simple(),
+			),
 		})
 	],
 	exitOnError: false
