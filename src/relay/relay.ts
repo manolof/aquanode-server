@@ -1,5 +1,5 @@
 /* tslint:disable */
-const pigpio = process.env.NODE_ENV === 'development' ?
+const pigpio = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ?
 	require('pigpio-mock') :
 	require('pigpio');
 /* tslint:enable */

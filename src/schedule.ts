@@ -8,7 +8,8 @@ interface ScheduleJob {
 	job_next_run: Date;
 }
 
-interface ScheduleResponse extends Array<ScheduleJob> {}
+interface ScheduleResponse extends Array<ScheduleJob> {
+}
 
 export abstract class BaseSchedule {
 	public static getSchedules(): ScheduleResponse {
@@ -57,9 +58,10 @@ export abstract class BaseSchedule {
 	private static jobs: Job[] = [];
 
 	private static getClosestPastSchedule(schedule: Schedule[]): Schedule {
-		const d = new Date();
-		const currentHour = d.getHours();
-		const currentMinute = d.getMinutes();
+		const dateNow = Date.now();
+		const date = new Date(dateNow);
+		const currentHour = date.getHours();
+		const currentMinute = date.getMinutes();
 
 		let closestPastSchedule: Schedule = schedule[0];
 		let index = schedule.length - 1;
