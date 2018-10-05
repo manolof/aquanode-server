@@ -1,5 +1,5 @@
 /* tslint:disable */
-const pigpio = process.env.NODE_ENV === 'development' ?
+const pigpio = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test' ?
 	require('pigpio-mock') :
 	require('pigpio');
 /* tslint:enable */
@@ -85,12 +85,12 @@ export class Lights {
 		return ((this.options.end - this.options.start) * this.framerate) / this.options.fadeDuration;
 	}
 
-	public setDay() {
+	private setDay() {
 		status.set(LightsStatus.day);
 		this.fade(Fade.in);
 	}
 
-	public setNight() {
+	private setNight() {
 		status.set(LightsStatus.night);
 		this.fade(Fade.out);
 	}
