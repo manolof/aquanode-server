@@ -29,7 +29,7 @@ script:
   - cd $TRAVIS_BUILD_DIR
   # Run tests
   - npm run test
-  - codecov
+  - codecov -f coverage/coverage-final.json --disable=gcov
   # Run build process
   - npm run start:prod
   # Kill PM2 server
