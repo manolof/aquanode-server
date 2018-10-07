@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-  - "8"
+  - "10"
 env:
   - CXX=g++-4.8
 addons:
@@ -18,4 +18,12 @@ before_install:
 before_script:
   - npm install -g typescript
   - npm install -g pm2
-script: cd $TRAVIS_BUILD_DIR && npm install && npm run start:prod && pm2 delete server
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - npm install
+  # Run tests
+  - npm run test
+  # Run build process
+  - npm run start:prod
+  # Kill PM2 server
+  - pm2 delete server
