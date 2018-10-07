@@ -6,7 +6,10 @@
 	<img src="/../images/tools.png?raw=true" width="150" height="76">
 </p>
 
-# Aquanode Server [![Build Status](https://travis-ci.org/manolof/aquanode-server.svg?branch=master)](https://travis-ci.org/manolof/aquanode-server)
+# Aquanode Server
+
+[![Build Status](https://travis-ci.org/manolof/aquanode-server.svg?branch=master)](https://travis-ci.org/manolof/aquanode-server)
+[![codecov](https://codecov.io/gh/manolof/aquanode-server/branch/master/graph/badge.svg)](https://codecov.io/gh/manolof/aquanode-server)
 
 Automated lighting control for an aquarium using a Raspberry Pi.
 
