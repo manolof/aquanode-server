@@ -4,6 +4,7 @@
     "outDir": "dist",
     "removeComments": true,
     "lib": [
+      "dom",
       "es6"
     ],
     "target": "es5"
