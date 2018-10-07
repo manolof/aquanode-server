@@ -22,12 +22,14 @@ cache:
 	directories:
 	- "$HOME/.npm"
 before_script:
+  - npm install -g codecov
   - npm install -g typescript
   - npm install -g pm2
 script:
   - cd $TRAVIS_BUILD_DIR
   # Run tests
   - npm run test
+  - codecov
   # Run build process
   - npm run start:prod
   # Kill PM2 server
