@@ -13,7 +13,6 @@ export class TemperatureSensor {
 	}
 
 	private static instance: TemperatureSensor;
-	private interval: Interval;
 	private options;
 
 	constructor() {
@@ -43,7 +42,7 @@ export class TemperatureSensor {
 
 			// logger.info(`Sensor IDs: ${ids}`);
 
-			this.interval = new Interval(
+			new Interval(
 				() => {
 					// logger.info(`Sensor ${temperatureSensorId} (decimal): ${sensor.temperatureSync(temperatureSensorId)}`);
 					// this.recordTemperature(sensor.temperatureSync(temperatureSensorId));
@@ -51,8 +50,8 @@ export class TemperatureSensor {
 					this.recordTemperature(Math.floor(Math.random() * Math.floor(30)));
 				},
 				this.options.temperatureSensorInterval,
-			);
-			this.interval.start();
+			)
+				.start();
 
 		});
 	}
@@ -61,6 +60,7 @@ export class TemperatureSensor {
 		logger.info(`${temperature}`);
 		temperatureLogCollection.add({
 			temperature,
+			date: new Date(),
 		});
 	}
 }
