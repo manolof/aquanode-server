@@ -1,5 +1,6 @@
 import { LightsConfig, LightsPins, LightsStatus } from './lights/interfaces';
 import { RelayPins, RelayStatus } from './relay/interfaces';
+import { TemperatureSensorConfig } from './temperature-sensor/interfaces';
 
 interface Time {
 	hour: number;
@@ -16,7 +17,7 @@ export interface Schedule {
 	state: CombinedStatus;
 }
 
-export interface Config extends LightsConfig {
+export interface Config extends LightsConfig, TemperatureSensorConfig {
 	port: number;
 	pins: Pins;
 	logFile: string;

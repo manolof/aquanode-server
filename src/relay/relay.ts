@@ -56,12 +56,12 @@ export class Relay {
 		return Relay.instance;
 	}
 
-	public setOn() {
+	private setOn() {
 		status.set(RelayStatus.on);
 		this.setRelay(0);
 	}
 
-	public setOff() {
+	private setOff() {
 		status.set(RelayStatus.off);
 		this.setRelay(1);
 	}
