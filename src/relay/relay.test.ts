@@ -1,6 +1,4 @@
-/* tslint:disable */
-const pigpio = require('pigpio-mock');
-/* tslint:enable */
+import * as pigpio from 'pigpio';
 const Gpio = pigpio.Gpio;
 
 import { logger } from '../logger';
@@ -14,16 +12,14 @@ jest.mock('../logger');
 jest.mock('./status');
 
 describe('Relay', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('setState', () => {
 		const gpioDigitalWrite = jest.spyOn(Gpio.prototype, 'digitalWrite');
 		const loggerError = jest.spyOn(logger, 'error');
 		const statusSet = jest.spyOn(status, 'set');
-
-		beforeEach(() => {
-			gpioDigitalWrite.mockClear();
-			loggerError.mockClear();
-			statusSet.mockClear();
-		});
 
 		it(`should set the relay's state to on`, () => {
 			Relay.setState(RelayStatus.on);
@@ -53,11 +49,6 @@ describe('Relay', () => {
 		const loggerInfo = jest.spyOn(logger, 'info');
 		const loggerWarn = jest.spyOn(logger, 'warn');
 		const processExit = jest.spyOn(process, 'exit').mockImplementation((_number) => _number);
-
-		beforeEach(() => {
-			loggerInfo.mockClear();
-			loggerWarn.mockClear();
-		});
 
 		it(`should attempt to gracefully shutdown the relay`, () => {
 			Relay.shutdown();
