@@ -18,9 +18,11 @@ export class Relay {
 			case RelayStatus.on:
 				relay.setOn();
 				break;
+
 			case RelayStatus.off:
 				relay.setOff();
 				break;
+
 			default:
 				logger.error(`A relay change was requested for an invalid state ${state}.
 				Must be one of ${RelayStatus.on}, or ${RelayStatus.off}`);

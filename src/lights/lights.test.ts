@@ -83,6 +83,17 @@ describe('Lights', () => {
 			expect(intervalStop).toHaveBeenCalledTimes(2);
 		});
 
+		it(`should set the light's state to off`, () => {
+			Lights.setState(LightsStatus.off);
+
+			expect(statusSet).toHaveBeenCalledWith(LightsStatus.off);
+
+			expect(intervalStop).toHaveBeenCalledTimes(1);
+			expect(intervalStart).not.toHaveBeenCalled();
+
+			expect(gpioPwmWrite.mock.calls[0][0]).toBe(0);
+		});
+
 		it(`should log an error if it's called with the incorrect light state`, () => {
 			Lights.setState('test' as any);
 
