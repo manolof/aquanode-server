@@ -10,11 +10,12 @@ describe('Interval', () => {
 		framerate,
 	);
 
-	describe('start', () => {
-		afterAll(() => {
-			mockFnMethod.mockReset();
-		});
+	afterAll(() => {
+		mockFnMethod.mockReset();
+		jest.clearAllTimers();
+	});
 
+	describe('start', () => {
 		it('should start the interval', () => {
 			interval.start();
 
