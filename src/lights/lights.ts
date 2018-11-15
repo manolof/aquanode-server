@@ -19,9 +19,15 @@ export class Lights {
 			case LightsStatus.day:
 				lights.setDay();
 				break;
+
 			case LightsStatus.night:
 				lights.setNight();
 				break;
+
+			case LightsStatus.off:
+				lights.setOff();
+				break;
+
 			default:
 				logger.error(`A light change was requested for an invalid state ${state}.
 				Must be one of ${LightsStatus.day}, or ${LightsStatus.night}`);
@@ -95,6 +101,11 @@ export class Lights {
 		this.fade(Fade.out);
 	}
 
+	private setOff() {
+		status.set(LightsStatus.off);
+		this.off();
+	}
+
 	private fade(mode: Fade) {
 		this.stop();
 
@@ -113,6 +124,19 @@ export class Lights {
 		if (this.interval instanceof Interval) {
 			this.interval.stop();
 		}
+	}
+
+	private off() {
+		this.stop();
+
+		this.options.whiteLED.pwmWrite(0);
+
+		Object.keys(this.options.rgbLEDs)
+			.map((led) => {
+				this.options.rgbLEDs[led].pwmWrite(0);
+			});
+
+		this.count = 0;
 	}
 
 	private calculateRate(mode: Fade): void {
