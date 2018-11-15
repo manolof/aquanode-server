@@ -28,26 +28,30 @@ export class TemperatureSensor {
 	}
 
 	private getTemperature() {
-		// TODO
 		sensor.sensors((err, ids) => {
-		// 	if (err) {
-		// 		logger.error(`Can not get sensor IDs: ${err}`);
-				// return;
-			// }
+			if (err) {
+				logger.error(`Can not get sensor IDs: ${err}`);
+				return;
+			}
 
-			// if (ids.length > 1) {
-			// 	logger.error('Multiple 1-Wire sensors found; you should only connect one');
-				// return;
-			// }
+			if (ids.length === 0) {
+				logger.error(`No sensors found`);
+				return;
+			}
 
-			// logger.info(`Sensor IDs: ${ids}`);
+			if (ids.length > 1) {
+				logger.error(`Multiple 1-Wire sensors found; you should only connect one`);
+				return;
+			}
+
+			const [temperatureSensorId] = ids;
+
+			logger.info(`Sensor ID: ${temperatureSensorId}`);
 
 			new Interval(
 				() => {
-					// logger.info(`Sensor ${temperatureSensorId} (decimal): ${sensor.temperatureSync(temperatureSensorId)}`);
-					// this.recordTemperature(sensor.temperatureSync(temperatureSensorId));
-					// const [temperatureSensorId] = ids;
-					this.recordTemperature(Math.floor(Math.random() * Math.floor(30)));
+					logger.info(`Sensor ${temperatureSensorId} (decimal): ${sensor.temperatureSync(temperatureSensorId)}`);
+					this.recordTemperature(sensor.temperatureSync(temperatureSensorId));
 				},
 				this.options.temperatureSensorInterval,
 			)
