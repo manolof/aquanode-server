@@ -1,6 +1,4 @@
-/* tslint:disable */
-const pigpio = require('pigpio-mock');
-/* tslint:enable */
+import * as pigpio from 'pigpio';
 const Gpio = pigpio.Gpio;
 
 import { CONFIG } from '../../conf/config';
@@ -34,20 +32,20 @@ jest.mock('../logger');
 jest.mock('./status');
 
 describe('Lights', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	afterEach(() => {
+		jest.clearAllTimers();
+	});
+
 	describe('setState', () => {
 		const intervalStart = jest.spyOn(Interval.prototype, 'start');
 		const intervalStop = jest.spyOn(Interval.prototype, 'stop');
 		const gpioPwmWrite = jest.spyOn(Gpio.prototype, 'pwmWrite');
 		const loggerError = jest.spyOn(logger, 'error');
 		const statusSet = jest.spyOn(status, 'set');
-
-		beforeEach(() => {
-			intervalStart.mockClear();
-			intervalStop.mockClear();
-			gpioPwmWrite.mockClear();
-			loggerError.mockClear();
-			statusSet.mockClear();
-		});
 
 		it(`should set the light's state to day`, () => {
 			Lights.setState(LightsStatus.day);
@@ -110,11 +108,6 @@ describe('Lights', () => {
 		const loggerInfo = jest.spyOn(logger, 'info');
 		const loggerWarn = jest.spyOn(logger, 'warn');
 		const processExit = jest.spyOn(process, 'exit').mockImplementation((_number) => _number);
-
-		beforeEach(() => {
-			loggerInfo.mockClear();
-			loggerWarn.mockClear();
-		});
 
 		it(`should attempt to gracefully shutdown the lights`, () => {
 			Lights.shutdown();
