@@ -1,44 +1,42 @@
-import * as bodyParser from 'body-parser';
-import * as cors from 'cors';
-import * as errorHandler from 'errorhandler';
-import * as express from 'express';
+import * as http from 'http';
+import * as socketIo from 'socket.io';
 
-import { CONFIG } from '../conf/config';
 import { LightsSchedule } from './lights/schedule';
+import { logger } from './logger';
 // import { RelaySchedule } from './relay/schedule';
-import scheduleRoutes from './routes/schedule';
-import statusRoutes from './routes/status';
+import { schedule } from './routes/schedule';
+import { status } from './routes/status';
 import { TemperatureSensor } from './temperature-sensor/temperature-sensor';
 
-const app: express.Application = express();
+const app: http.Server = http.createServer();
+const io: socketIo.Server = socketIo(app);
 
-config(app);
 runSchedules();
-routes(app);
 
-function config(_app) {
-	_app.set('port', CONFIG.port);
+io.on('connection', (socket: socketIo.Socket) => {
 
-	// Enable cors for all routes and origins
-	_app.use(cors());
+	logger.info('client connected: ', socket.id);
 
-	_app.use(bodyParser.json());
+	handleSockets(socket);
 
-	_app.use(bodyParser.urlencoded({
-		extended: false,
-	}));
+	socket.on('disconnect', () => {
+		logger.info('client disconnected: ', socket.id);
+	});
 
-	_app.use(errorHandler());
-}
+	socket.on('error', (err) => {
+		logger.error('received error from client: ', socket.id);
+		logger.error(err);
+	});
+});
 
-function routes(_app) {
-	_app.use('/api', statusRoutes);
-	_app.use('/api', scheduleRoutes);
+function handleSockets(socket: socketIo.Socket) {
+	status(socket);
+	schedule(socket);
 }
 
 function runSchedules() {
 	LightsSchedule.init();
-	TemperatureSensor.init();
+	// TemperatureSensor.init();
 	// RelaySchedule.init();
 }
 

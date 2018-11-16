@@ -1,43 +1,49 @@
-import { Request, Response, Router } from 'express';
+import * as socketIo from 'socket.io';
 
-import { LightsStatus } from '../lights/interfaces';
+import { Interval } from '../interval';
 import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
 
-const router: Router = Router();
-
-router.get('/schedule', (req: Request, res: Response) => {
+export function schedule(socket: socketIo.Socket) {
 	logger.info('Serving the schedule');
 
-	res.send(
-		{
+	const interval = new Interval(() => {
+		logger.debug('emitting schedule...');
+
+		socket.emit('schedule', {
 			data: LightsSchedule.getSchedules(),
-		},
-	);
-});
+		});
 
-router.post('/schedule', (req: Request, res: Response) => {
-	logger.info('Updating the schedule');
+	}, 2000);
 
-	LightsSchedule.forceSchedule(req.body.schedule as LightsStatus);
+	interval.start();
 
-	res.send(
-		{
-			data: LightsSchedule.getSchedules(),
-		},
-	);
-});
+	socket.on('disconnect', () => {
+		logger.debug('stopped emitting schedule');
+		interval.stop();
+	});
+}
 
-router.post('/schedule/reset', (req: Request, res: Response) => {
-	logger.info('Resetting the schedule');
+// router.post('/schedule', (req: Request, res: Response) => {
+// 	logger.info('Updating the schedule');
+//
+// 	LightsSchedule.forceSchedule(req.body.schedule as LightsStatus);
+//
+// 	res.send(
+// 		{
+// 			data: LightsSchedule.getSchedules(),
+// 		},
+// 	);
+// });
 
-	LightsSchedule.resetSchedule();
-
-	res.send(
-		{
-			data: LightsSchedule.getSchedules(),
-		},
-	);
-});
-
-export default router;
+// router.post('/schedule/reset', (req: Request, res: Response) => {
+// 	logger.info('Resetting the schedule');
+//
+// 	LightsSchedule.resetSchedule();
+//
+// 	res.send(
+// 		{
+// 			data: LightsSchedule.getSchedules(),
+// 		},
+// 	);
+// });
