@@ -1,4 +1,5 @@
 import * as firebase from 'firebase-admin';
+
 import serviceAccount from './firestore-service-account';
 
 const app = firebase.initializeApp({

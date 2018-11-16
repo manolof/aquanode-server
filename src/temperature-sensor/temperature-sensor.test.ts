@@ -36,18 +36,13 @@ describe('TemperatureSensor', () => {
 
 	describe('init', () => {
 		it(`should start recording the temperature at a set interval`, () => {
-			sensor._setMockIds(['id1']);
-
 			TemperatureSensor.init();
 
 			jest.advanceTimersByTime(CONFIG.temperatureSensorInterval);
 
 			expect(loggerError).not.toHaveBeenCalled();
 			expect(intervalStart).toHaveBeenCalledTimes(1);
-			expect(temperatureLogCollectionAdd).toHaveBeenCalledWith({
-				temperature: 42,
-				date: expect.any(Date),
-			});
+			expect(temperatureLogCollectionAdd).not.toHaveBeenCalled(); // TODO: mock NODE_ENV and test it
 		});
 
 		it(`should log an error if there is a sensor error`, () => {

@@ -1,5 +1,5 @@
 let mockError = null;
-let mockIds = [];
+let mockIds = ['id1'];
 
 const _setMockError = (error) => {
 	mockError = error;

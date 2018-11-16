@@ -1,7 +1,10 @@
-import * as sensor from 'ds18b20';
+/* tslint:disable */
+const sensor = process.env.NODE_ENV === 'development' ?
+	require('../__mocks__/ds18b20.js') :
+	require('ds18b20');
+/* tslint:enable */
 
 import { CONFIG } from '../../conf/config';
-import { temperatureLogCollection } from '../../conf/firebase';
 import { Interval } from '../interval';
 import { logger } from '../logger';
 
@@ -50,8 +53,7 @@ export class TemperatureSensor {
 
 			new Interval(
 				() => {
-					logger.info(`Sensor ${temperatureSensorId} (decimal): ${sensor.temperatureSync(temperatureSensorId)}`);
-					this.recordTemperature(sensor.temperatureSync(temperatureSensorId));
+					this.processTemperatureReading(sensor.temperatureSync(temperatureSensorId));
 				},
 				this.options.temperatureSensorInterval,
 			)
@@ -60,11 +62,16 @@ export class TemperatureSensor {
 		});
 	}
 
-	private recordTemperature(temperature: number) {
-		logger.info(`${temperature}`);
-		temperatureLogCollection.add({
-			temperature,
-			date: new Date(),
-		});
+	private async processTemperatureReading(temperature: number) {
+		logger.info(`Sensor temperature: ${temperature}`);
+
+		if (['production', 'test'].indexOf(process.env.NODE_ENV) > -1) {
+			const firebase = await import('../../conf/firebase');
+
+			firebase.temperatureLogCollection.add({
+				temperature,
+				date: new Date(),
+			});
+		}
 	}
 }
