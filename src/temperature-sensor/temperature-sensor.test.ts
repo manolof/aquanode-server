@@ -25,6 +25,7 @@ describe('TemperatureSensor', () => {
 	const intervalStart = jest.spyOn(Interval.prototype, 'start');
 	const loggerError = jest.spyOn(logger, 'error');
 	const temperatureLogCollectionAdd = jest.spyOn(temperatureLogCollection, 'add');
+	const originalProcessEnv = process.env;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -35,14 +36,34 @@ describe('TemperatureSensor', () => {
 	});
 
 	describe('init', () => {
-		it(`should start recording the temperature at a set interval`, () => {
+		it(`should start recording the temperature at a set interval, if in production`, () => {
+			process.env = {
+				...originalProcessEnv,
+				NODE_ENV: 'production',
+			};
+
+			TemperatureSensor.init();
+
+			jest.advanceTimersByTime(CONFIG.temperatureSensorInterval);
+
+			process.env = originalProcessEnv;
+
+			expect(loggerError).not.toHaveBeenCalled();
+			expect(intervalStart).toHaveBeenCalledTimes(1);
+			expect(temperatureLogCollectionAdd).toHaveBeenCalledWith({
+				temperature: 42,
+				date: expect.any(Date),
+			});
+		});
+
+		it(`should not start recording the temperature, if not in production`, () => {
 			TemperatureSensor.init();
 
 			jest.advanceTimersByTime(CONFIG.temperatureSensorInterval);
 
 			expect(loggerError).not.toHaveBeenCalled();
 			expect(intervalStart).toHaveBeenCalledTimes(1);
-			expect(temperatureLogCollectionAdd).not.toHaveBeenCalled(); // TODO: mock NODE_ENV and test it
+			expect(temperatureLogCollectionAdd).not.toHaveBeenCalled();
 		});
 
 		it(`should log an error if there is a sensor error`, () => {
