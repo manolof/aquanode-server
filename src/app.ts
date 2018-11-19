@@ -8,6 +8,7 @@ import { LightsSchedule } from './lights/schedule';
 // import { RelaySchedule } from './relay/schedule';
 import scheduleRoutes from './routes/schedule';
 import statusRoutes from './routes/status';
+import { TemperatureSensor } from './temperature-sensor/temperature-sensor';
 
 const app: express.Application = express();
 
@@ -37,6 +38,7 @@ function routes(_app) {
 
 function runSchedules() {
 	LightsSchedule.init();
+	TemperatureSensor.init();
 	// RelaySchedule.init();
 }
 

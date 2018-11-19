@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* istanbul ignore next */
 const pigpio = process.env.NODE_ENV === 'development' ?
 	require('pigpio-mock') :
 	require('pigpio');
