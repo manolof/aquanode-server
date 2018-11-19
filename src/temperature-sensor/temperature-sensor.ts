@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* istanbul ignore next */
 const sensor = process.env.NODE_ENV === 'development' ?
 	require('../__mocks__/ds18b20.js') :
 	require('ds18b20');
@@ -65,8 +66,8 @@ export class TemperatureSensor {
 	private async processTemperatureReading(temperature: number) {
 		logger.info(`Sensor temperature: ${temperature}`);
 
-		if (['production', 'test'].indexOf(process.env.NODE_ENV) > -1) {
-			const firebase = await import('../../conf/firebase');
+		if (process.env.NODE_ENV === 'production') {
+			const firebase = require('../../conf/firebase');
 
 			firebase.temperatureLogCollection.add({
 				temperature,

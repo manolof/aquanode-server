@@ -1,3 +1,4 @@
+// @ts-ignore
 import * as pigpio from 'pigpio';
 const Gpio = pigpio.Gpio;
 
