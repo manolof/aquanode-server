@@ -1,49 +1,49 @@
 import * as socketIo from 'socket.io';
 
-import { Interval } from '../interval';
+import { LightsStatus } from '../lights/interfaces';
 import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
 
-export function schedule(socket: socketIo.Socket) {
-	logger.info('Serving the schedule');
+export function schedule(socketIoServer: socketIo.Server) {
+	const namespace = socketIoServer.of('schedule');
 
-	const interval = new Interval(() => {
-		logger.debug('emitting schedule...');
+	namespace.on('connection', (namespaceSocket: socketIo.Socket) => {
+		logger.info('Serving the schedule');
 
-		socket.emit('schedule', {
-			data: LightsSchedule.getSchedules(),
+		onGet(namespaceSocket);
+		onReset(namespaceSocket);
+		onSet(namespaceSocket);
+
+		namespaceSocket.on('disconnect', () => {
+			logger.info('Schedule client disconnected');
 		});
+	});
 
-	}, 2000);
+}
 
-	interval.start();
-
-	socket.on('disconnect', () => {
-		logger.debug('stopped emitting schedule');
-		interval.stop();
+function onGet(namespaceSocket: socketIo.Socket) {
+	logger.debug('emitting schedule...');
+	namespaceSocket.emit('get', {
+		data: LightsSchedule.getSchedules(),
 	});
 }
 
-// router.post('/schedule', (req: Request, res: Response) => {
-// 	logger.info('Updating the schedule');
-//
-// 	LightsSchedule.forceSchedule(req.body.schedule as LightsStatus);
-//
-// 	res.send(
-// 		{
-// 			data: LightsSchedule.getSchedules(),
-// 		},
-// 	);
-// });
+function onReset(namespaceSocket: socketIo.Socket) {
+	namespaceSocket.on('reset', () => {
+		logger.info('Resetting the schedule');
 
-// router.post('/schedule/reset', (req: Request, res: Response) => {
-// 	logger.info('Resetting the schedule');
-//
-// 	LightsSchedule.resetSchedule();
-//
-// 	res.send(
-// 		{
-// 			data: LightsSchedule.getSchedules(),
-// 		},
-// 	);
-// });
+		LightsSchedule.resetSchedule();
+
+		onGet(namespaceSocket);
+	});
+}
+
+function onSet(namespaceSocket: socketIo.Socket) {
+	namespaceSocket.on('set', (message: LightsStatus) => {
+		logger.info('Updating the schedule');
+
+		LightsSchedule.forceSchedule(message);
+
+		onGet(namespaceSocket);
+	});
+}

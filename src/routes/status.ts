@@ -5,36 +5,43 @@ import lightsStatus from '../lights/status';
 import { logger } from '../logger';
 import relayStatus from '../relay/status';
 
-export function status(socket: socketIo.Socket) {
-	logger.info('Serving the status');
+export function status(socketIoServer: socketIo.Server) {
+	const namespace = socketIoServer.of('status');
 
-	const interval = new Interval(() => {
+	const interval = (namespaceSocket: socketIo.Socket) => new Interval(() => {
 		logger.debug('emitting status...');
 
-		const extendedStatus = {
-			time: new Date().toISOString(),
-			entities: [
-				{
-					type: 'lights',
-					status: lightsStatus.get(),
-				},
-				{
-					type: 'relay',
-					status: relayStatus.get(),
-				},
-			],
-		};
+		onGet(namespaceSocket);
 
-		socket.emit('status', {
-			data: extendedStatus,
+	}, 1000);
+
+	namespace.on('connection', (namespaceSocket: socketIo.Socket) => {
+		logger.info('Serving the status');
+		interval(namespaceSocket).start();
+
+		namespaceSocket.on('disconnect', () => {
+			logger.info('Status client disconnected');
+			interval(namespaceSocket).stop();
 		});
+	});
+}
 
-	}, 2000);
+function onGet(namespaceSocket: socketIo.Socket) {
+	const extendedStatus = {
+		time: new Date().toISOString(),
+		entities: [
+			{
+				type: 'lights',
+				status: lightsStatus.get(),
+			},
+			{
+				type: 'relay',
+				status: relayStatus.get(),
+			},
+		],
+	};
 
-	interval.start();
-
-	socket.on('disconnect', () => {
-		logger.debug('stopped emitting status');
-		interval.stop();
+	namespaceSocket.emit('get', {
+		data: extendedStatus,
 	});
 }
