@@ -65,8 +65,8 @@ export class TemperatureSensor {
 	private async processTemperatureReading(temperature: number) {
 		logger.info(`Sensor temperature: ${temperature}`);
 
-		if (['production', 'test'].indexOf(process.env.NODE_ENV) > -1) {
-			const firebase = await import('../../conf/firebase');
+		if (process.env.NODE_ENV === 'production') {
+			const firebase = require('../../conf/firebase');
 
 			firebase.temperatureLogCollection.add({
 				temperature,
