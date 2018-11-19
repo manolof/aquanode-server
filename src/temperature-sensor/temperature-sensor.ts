@@ -1,4 +1,5 @@
 /* tslint:disable */
+/* istanbul ignore next */
 const sensor = process.env.NODE_ENV === 'development' ?
 	require('../__mocks__/ds18b20.js') :
 	require('ds18b20');
