@@ -1,14 +1,7 @@
-import * as bodyParser from 'body-parser';
-import * as express from 'express';
-import * as request from 'supertest';
-
-import { LightsStatus } from '../lights/interfaces';
 import { LightsSchedule } from '../lights/schedule';
-import { logger } from '../logger';
-import scheduleRoutes from './schedule';
+import { schedule } from './schedule';
 
-jest.mock('../app');
-jest.mock('../logger');
+jest.mock('socket.io');
 jest.mock('../lights/schedule', () => ({
 	LightsSchedule: {
 		getSchedules: () => {
@@ -22,83 +15,56 @@ jest.mock('../lights/schedule', () => ({
 		},
 	},
 }));
+jest.mock('../logger');
 
-describe('Schedule routes', () => {
-	const loggerInfo = jest.spyOn(logger, 'info');
+const mockEmitSocketEventCallback = jest.fn();
+const mockOnSocketEventCallback = jest.fn().mockImplementation((event, callback) => {
+	callback();
+});
+
+const mockOnConnectionCallback = jest.fn().mockImplementation(() => ({
+	on: mockOnSocketEventCallback,
+	emit: mockEmitSocketEventCallback,
+}));
+
+const mockNamespaceOn = jest.fn().mockImplementation((event, callback) => {
+	callback(mockOnConnectionCallback());
+});
+
+const mockSocketIoServer = {
+	of: jest.fn().mockImplementation(() => ({
+		on: mockNamespaceOn,
+	})),
+};
+
+describe('Schedule sockets', () => {
 	const lightsForceSchedule = jest.spyOn(LightsSchedule, 'forceSchedule');
 	const lightsResetSchedule = jest.spyOn(LightsSchedule, 'resetSchedule');
 
-	const app: express.Application = express();
-	app.use(bodyParser.json());
-	app.use(bodyParser.urlencoded({ extended: false }));
-	app.use('/api', scheduleRoutes);
+	it('should set up sockets', () => {
+		schedule(mockSocketIoServer as any);
 
-	describe('GET /schedule', () => {
-		it('should return the schedule', (done) => {
-			request(app)
-				.get('/api/schedule')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect((res) => {
-					expect(loggerInfo).toHaveBeenCalled();
+		// Namespace
+		expect(mockSocketIoServer.of).toHaveBeenCalledWith('schedule');
 
-					expect(res.body).toEqual({
-						data: [],
-					});
-				})
-				.end((err) => {
-					if (err) {
-						return done(err);
-					}
-					done();
-				});
+		// on namespace connection
+		expect(mockNamespaceOn).toHaveBeenCalledWith('connection', expect.any(Function));
+
+		// on socket get
+		expect(mockEmitSocketEventCallback).toHaveBeenNthCalledWith(1, 'get', {
+			data: [],
 		});
-	});
 
-	describe('POST /schedule', () => {
-		it('should force a schedule change', (done) => {
-			request(app)
-				.post('/api/schedule')
-				.send({ schedule: LightsStatus.night })
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect((res) => {
-					expect(loggerInfo).toHaveBeenCalled();
-					expect(lightsForceSchedule).toHaveBeenCalledWith(LightsStatus.night);
+		// on socket set
+		expect(mockOnSocketEventCallback).toHaveBeenCalledWith('set', expect.any(Function));
+		expect(lightsForceSchedule).toHaveBeenCalled();
 
-					expect(res.body).toEqual({
-						data: [],
-					});
-				})
-				.end((err) => {
-					if (err) {
-						return done(err);
-					}
-					done();
-				});
-		});
-	});
+		// on socket reset
+		expect(mockOnSocketEventCallback).toHaveBeenCalledWith('reset', expect.any(Function));
+		expect(lightsResetSchedule).toHaveBeenCalled();
 
-	describe('POST /schedule/reset', () => {
-		it('should reset the schedule to the predefined', (done) => {
-			request(app)
-				.post('/api/schedule/reset')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect((res) => {
-					expect(loggerInfo).toHaveBeenCalled();
-					expect(lightsResetSchedule).toHaveBeenCalled();
+		expect(mockOnSocketEventCallback).toHaveBeenCalledWith('disconnect', expect.any(Function));
 
-					expect(res.body).toEqual({
-						data: [],
-					});
-				})
-				.end((err) => {
-					if (err) {
-						return done(err);
-					}
-					done();
-				});
-		});
+		expect(mockEmitSocketEventCallback).toHaveBeenCalledTimes(3);
 	});
 });

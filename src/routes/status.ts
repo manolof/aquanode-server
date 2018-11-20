@@ -1,5 +1,6 @@
 import * as socketIo from 'socket.io';
 
+import { CONFIG } from '../../conf/config';
 import { Interval } from '../interval';
 import lightsStatus from '../lights/status';
 import { logger } from '../logger';
@@ -13,7 +14,7 @@ export function status(socketIoServer: socketIo.Server) {
 
 		onGet(namespaceSocket);
 
-	}, 1000);
+	}, CONFIG.socketEmitInterval);
 
 	namespace.on('connection', (namespaceSocket: socketIo.Socket) => {
 		logger.info('Serving the status');

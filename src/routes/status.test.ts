@@ -1,12 +1,15 @@
-import * as bodyParser from 'body-parser';
-import * as express from 'express';
-import * as request from 'supertest';
+import { CONFIG } from '../../conf/config';
+import { status } from './status';
 
-import { logger } from '../logger';
-import statusRoutes from './status';
+jest.useFakeTimers();
 
-jest.mock('../app');
-jest.mock('../logger');
+jest.mock('socket.io');
+jest.mock('../../conf/config', () => ({
+	CONFIG: {
+		logFile: 'log.log',
+		socketEmitInterval: 500,
+	},
+}));
 jest.mock('../lights/status', () => ({
 	__esModule: true,
 	default: {
@@ -15,6 +18,7 @@ jest.mock('../lights/status', () => ({
 		}
 	},
 }));
+jest.mock('../logger');
 jest.mock('../relay/status', () => ({
 	__esModule: true,
 	default: {
@@ -24,46 +28,61 @@ jest.mock('../relay/status', () => ({
 	},
 }));
 
-describe('Status routes', () => {
-	const loggerInfo = jest.spyOn(logger, 'info');
+const mockEmitSocketEventCallback = jest.fn();
+const mockOnSocketEventCallback = jest.fn().mockImplementation((event, callback) => {
+	callback();
+});
 
-	const app: express.Application = express();
-	app.use(bodyParser.json());
-	app.use(bodyParser.urlencoded({ extended: false }));
-	app.use('/api', statusRoutes);
+const mockOnConnectionCallback = jest.fn().mockImplementation(() => ({
+	on: mockOnSocketEventCallback,
+	emit: mockEmitSocketEventCallback,
+}));
 
-	describe('GET /status', () => {
-		it('should return the status', (done) => {
-			request(app)
-				.get('/api/status')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect((res) => {
-					expect(loggerInfo).toHaveBeenCalled();
+const mockNamespaceOn = jest.fn().mockImplementation((event, callback) => {
+	callback(mockOnConnectionCallback());
+});
 
-					expect(res.body).toEqual({
-						data: {
-							time: expect.any(String),
-							entities: [
-								{
-									type: 'lights',
-									status: 'test1',
-								},
-								{
-									type: 'relay',
-									status: 'test1',
-								},
-							],
+const mockSocketIoServer = {
+	of: jest.fn().mockImplementation(() => ({
+		on: mockNamespaceOn,
+	})),
+};
 
-						},
-					});
-				})
-				.end((err) => {
-					if (err) {
-						return done(err);
-					}
-					done();
-				});
+describe('Status sockets', () => {
+	afterEach(() => {
+		jest.clearAllTimers();
+	});
+
+	it('should set up sockets', () => {
+		status(mockSocketIoServer as any);
+
+		// Namespace
+		expect(mockSocketIoServer.of).toHaveBeenCalledWith('status');
+
+		// on namespace connection
+		expect(mockNamespaceOn).toHaveBeenCalledWith('connection', expect.any(Function));
+
+		jest.advanceTimersByTime(CONFIG.socketEmitInterval);
+
+		// on socket get
+		expect(mockEmitSocketEventCallback).toHaveBeenCalledWith('get', {
+			data: {
+				time: expect.any(String),
+				entities: [
+					{
+						type: 'lights',
+						status: 'test1',
+					},
+					{
+						type: 'relay',
+						status: 'test1',
+					},
+				],
+			},
 		});
+
+		expect(mockOnSocketEventCallback).toHaveBeenCalledWith('disconnect', expect.any(Function));
+
+		expect(mockEmitSocketEventCallback).toHaveBeenCalledTimes(1);
 	});
 });

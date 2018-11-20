@@ -7,43 +7,43 @@ import { logger } from '../logger';
 export function schedule(socketIoServer: socketIo.Server) {
 	const namespace = socketIoServer.of('schedule');
 
-	namespace.on('connection', (namespaceSocket: socketIo.Socket) => {
+	namespace.on('connection', (clientSocket: socketIo.Socket) => {
 		logger.info('Serving the schedule');
 
-		onGet(namespaceSocket);
-		onReset(namespaceSocket);
-		onSet(namespaceSocket);
+		onGet(clientSocket);
+		onSet(clientSocket);
+		onReset(clientSocket);
 
-		namespaceSocket.on('disconnect', () => {
+		clientSocket.on('disconnect', () => {
 			logger.info('Schedule client disconnected');
 		});
 	});
 
 }
 
-function onGet(namespaceSocket: socketIo.Socket) {
+function onGet(clientSocket: socketIo.Socket) {
 	logger.debug('emitting schedule...');
-	namespaceSocket.emit('get', {
+	clientSocket.emit('get', {
 		data: LightsSchedule.getSchedules(),
 	});
 }
 
-function onReset(namespaceSocket: socketIo.Socket) {
-	namespaceSocket.on('reset', () => {
-		logger.info('Resetting the schedule');
-
-		LightsSchedule.resetSchedule();
-
-		onGet(namespaceSocket);
-	});
-}
-
-function onSet(namespaceSocket: socketIo.Socket) {
-	namespaceSocket.on('set', (message: LightsStatus) => {
+function onSet(clientSocket: socketIo.Socket) {
+	clientSocket.on('set', (message: LightsStatus) => {
 		logger.info('Updating the schedule');
 
 		LightsSchedule.forceSchedule(message);
 
-		onGet(namespaceSocket);
+		onGet(clientSocket);
+	});
+}
+
+function onReset(clientSocket: socketIo.Socket) {
+	clientSocket.on('reset', () => {
+		logger.info('Resetting the schedule');
+
+		LightsSchedule.resetSchedule();
+
+		onGet(clientSocket);
 	});
 }
