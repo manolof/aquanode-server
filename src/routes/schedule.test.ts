@@ -1,70 +1,90 @@
+import * as socketIoServer from 'socket.io';
+import * as socketIoClient from 'socket.io-client';
+
 import { LightsSchedule } from '../lights/schedule';
 import { schedule } from './schedule';
 
-jest.mock('socket.io');
 jest.mock('../lights/schedule', () => ({
 	LightsSchedule: {
 		getSchedules: () => {
 			return [];
 		},
-		forceSchedule: (...params) => {
+		forceSchedule: () => {
 			//
 		},
-		resetSchedule: (...params) => {
+		resetSchedule: () => {
 			//
 		},
 	},
 }));
 jest.mock('../logger');
 
-const mockEmitSocketEventCallback = jest.fn();
-const mockOnSocketEventCallback = jest.fn().mockImplementation((event, callback) => {
-	callback();
-});
-
-const mockOnConnectionCallback = jest.fn().mockImplementation(() => ({
-	on: mockOnSocketEventCallback,
-	emit: mockEmitSocketEventCallback,
-}));
-
-const mockNamespaceOn = jest.fn().mockImplementation((event, callback) => {
-	callback(mockOnConnectionCallback());
-});
-
-const mockSocketIoServer = {
-	of: jest.fn().mockImplementation(() => ({
-		on: mockNamespaceOn,
-	})),
-};
-
-describe('Schedule sockets', () => {
+describe('Schedule socket: integration', () => {
 	const lightsForceSchedule = jest.spyOn(LightsSchedule, 'forceSchedule');
 	const lightsResetSchedule = jest.spyOn(LightsSchedule, 'resetSchedule');
 
-	it('should set up sockets', () => {
-		schedule(mockSocketIoServer as any);
+	let _socketClient: socketIoServer.Socket;
+	let _socketServer: socketIoServer.Server;
 
-		// Namespace
-		expect(mockSocketIoServer.of).toHaveBeenCalledWith('schedule');
+	beforeEach(() => {
+		_socketServer = socketIoServer.listen(1337);
+		_socketClient = socketIoClient.connect('http://0.0.0.0:1337/schedule');
+		schedule(_socketServer);
+	});
 
-		// on namespace connection
-		expect(mockNamespaceOn).toHaveBeenCalledWith('connection', expect.any(Function));
+	afterEach(() => {
+		_socketClient.disconnect();
+		_socketServer.close();
+	});
 
-		// on socket get
-		expect(mockEmitSocketEventCallback).toHaveBeenNthCalledWith(1, 'get', {
-			data: [],
+	it('should set up the namespace', (done: () => void) => {
+		_socketClient.once('connect', () => {
+			expect(_socketServer.engine['clientsCount']).toBe(1);
+			expect(
+				Object.keys(_socketServer.nsps)
+					.some((nsp) => _socketServer.nsps[nsp].name === '/schedule')
+			).toBe(true);
+
+			done();
 		});
+	});
 
-		// on socket set
-		expect(mockOnSocketEventCallback).toHaveBeenCalledWith('set', expect.any(Function));
-		expect(lightsForceSchedule).toHaveBeenCalled();
+	it('should emit the schedule on connect', (done: () => void) => {
+		_socketClient.once('connect', () => {
+			_socketClient.once('get', (msg) => {
+				expect(msg).toEqual({ data: [] });
 
-		// on socket reset
-		expect(mockOnSocketEventCallback).toHaveBeenCalledWith('reset', expect.any(Function));
-		expect(lightsResetSchedule).toHaveBeenCalled();
+				done();
+			});
+		});
+	});
 
-		expect(mockOnSocketEventCallback).toHaveBeenCalledWith('disconnect', expect.any(Function));
+	it(`should receive a 'set' event and re-emit the schedule`, (done: () => void) => {
+		_socketServer.of('/schedule')
+			.once('connection', (clientSocket: socketIoServer.Socket) => {
+				_socketClient.emit('set', 'night');
+				expect(lightsForceSchedule).not.toHaveBeenCalled();
 
-		expect(mockEmitSocketEventCallback).toHaveBeenCalledTimes(3);
+				clientSocket.once('set', (message) => {
+					expect(message).toBe('night');
+					expect(lightsForceSchedule).toHaveBeenCalledTimes(1);
+
+					done();
+				});
+			});
+	});
+
+	it(`should receive a 'reset' event and re-emit the schedule`, (done: () => void) => {
+		_socketServer.of('/schedule')
+			.once('connection', (clientSocket: socketIoServer.Socket) => {
+				_socketClient.emit('reset');
+				expect(lightsResetSchedule).not.toHaveBeenCalled();
+
+				clientSocket.once('reset', () => {
+					expect(lightsResetSchedule).toHaveBeenCalledTimes(1);
+
+					done();
+				});
+			});
 	});
 });

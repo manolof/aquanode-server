@@ -4,21 +4,20 @@ import { LightsStatus } from '../lights/interfaces';
 import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
 
-export function schedule(socketIoServer: socketIo.Server) {
-	const namespace = socketIoServer.of('schedule');
+export function schedule(socketServer: socketIo.Server) {
+	socketServer
+		.of('schedule')
+		.on('connection', (clientSocket: socketIo.Socket) => {
+			logger.info('Serving the schedule');
 
-	namespace.on('connection', (clientSocket: socketIo.Socket) => {
-		logger.info('Serving the schedule');
+			onGet(clientSocket);
+			onSet(clientSocket);
+			onReset(clientSocket);
 
-		onGet(clientSocket);
-		onSet(clientSocket);
-		onReset(clientSocket);
-
-		clientSocket.on('disconnect', () => {
-			logger.info('Schedule client disconnected');
+			clientSocket.on('disconnect', () => {
+				logger.info('Schedule client disconnected');
+			});
 		});
-	});
-
 }
 
 function onGet(clientSocket: socketIo.Socket) {
@@ -29,10 +28,10 @@ function onGet(clientSocket: socketIo.Socket) {
 }
 
 function onSet(clientSocket: socketIo.Socket) {
-	clientSocket.on('set', (message: LightsStatus) => {
+	clientSocket.on('set', (status: LightsStatus) => {
 		logger.info('Updating the schedule');
 
-		LightsSchedule.forceSchedule(message);
+		LightsSchedule.forceSchedule(status);
 
 		onGet(clientSocket);
 	});
