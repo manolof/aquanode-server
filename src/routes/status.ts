@@ -6,28 +6,21 @@ import lightsStatus from '../lights/status';
 import { logger } from '../logger';
 import relayStatus from '../relay/status';
 
-export function status(socketIoServer: socketIo.Server) {
-	const namespace = socketIoServer.of('status');
+export function status(socketServer: socketIo.Server) {
+	socketServer
+		.of('status')
+		.on('connection', (clientSocket: socketIo.Socket) => {
+			logger.info('Serving the status');
+			interval(clientSocket).start();
 
-	const interval = (namespaceSocket: socketIo.Socket) => new Interval(() => {
-		logger.debug('emitting status...');
-
-		onGet(namespaceSocket);
-
-	}, CONFIG.socketEmitInterval);
-
-	namespace.on('connection', (namespaceSocket: socketIo.Socket) => {
-		logger.info('Serving the status');
-		interval(namespaceSocket).start();
-
-		namespaceSocket.on('disconnect', () => {
-			logger.info('Status client disconnected');
-			interval(namespaceSocket).stop();
+			clientSocket.on('disconnect', () => {
+				logger.info('Status client disconnected');
+				interval(clientSocket).stop();
+			});
 		});
-	});
 }
 
-function onGet(namespaceSocket: socketIo.Socket) {
+function onGet(clientSocket: socketIo.Socket) {
 	const extendedStatus = {
 		time: new Date().toISOString(),
 		entities: [
@@ -42,7 +35,16 @@ function onGet(namespaceSocket: socketIo.Socket) {
 		],
 	};
 
-	namespaceSocket.emit('get', {
+	clientSocket.emit('get', {
 		data: extendedStatus,
 	});
+}
+
+function interval(clientSocket: socketIo.Socket) {
+	return new Interval(() => {
+		logger.debug('emitting status...');
+
+		onGet(clientSocket);
+
+	}, CONFIG.socketEmitInterval);
 }
