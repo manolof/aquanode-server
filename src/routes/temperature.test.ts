@@ -27,8 +27,8 @@ describe('Temperature socket: integration', () => {
 	let _socketServer: socketIoServer.Server;
 
 	beforeEach(() => {
-		_socketServer = socketIoServer.listen(1337);
-		_socketClient = socketIoClient.connect('http://0.0.0.0:1337/temperature');
+		_socketServer = socketIoServer.listen(1339);
+		_socketClient = socketIoClient.connect('http://0.0.0.0:1339/temperature');
 		temperature(_socketServer);
 	});
 

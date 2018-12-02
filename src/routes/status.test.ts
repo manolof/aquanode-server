@@ -43,8 +43,8 @@ describe('Status socket: integration', () => {
 	let _socketServer: socketIoServer.Server;
 
 	beforeEach(() => {
-		_socketServer = socketIoServer.listen(1337);
-		_socketClient = socketIoClient.connect('http://0.0.0.0:1337/status');
+		_socketServer = socketIoServer.listen(1338);
+		_socketClient = socketIoClient.connect('http://0.0.0.0:1338/status');
 		status(_socketServer);
 	});
 
