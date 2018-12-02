@@ -6,6 +6,7 @@ import { LightsSchedule } from './lights/schedule';
 import { RelaySchedule } from './relay/schedule';
 import { schedule } from './routes/schedule';
 import { status } from './routes/status';
+import { temperature } from './routes/temperature';
 import { TemperatureSensor } from './temperature-sensor/temperature-sensor';
 
 const app: http.Server = http.createServer();
@@ -28,6 +29,7 @@ function runSchedules() {
 function handleSockets(_socketIoServer: socketIo.Server) {
 	status(_socketIoServer);
 	schedule(_socketIoServer);
+	temperature(_socketIoServer);
 }
 
 export {
