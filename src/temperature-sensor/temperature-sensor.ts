@@ -8,12 +8,13 @@ const sensor = process.env.NODE_ENV === 'development' ?
 import { CONFIG } from '../../conf/config';
 import { Interval } from '../interval';
 import { logger } from '../logger';
+import status from './status';
 
 export class TemperatureSensor {
 	public static init() {
-		const temperature = new TemperatureSensor();
+		const temperatureSensor = new TemperatureSensor();
 
-		temperature.getTemperature();
+		temperatureSensor.getTemperature();
 	}
 
 	private static instance: TemperatureSensor;
@@ -63,8 +64,10 @@ export class TemperatureSensor {
 		});
 	}
 
-	private async processTemperatureReading(temperature: number) {
+	private processTemperatureReading(temperature: number) {
 		logger.info(`Sensor temperature: ${temperature}`);
+
+		status.set(temperature.toString());
 
 		if (process.env.NODE_ENV === 'production') {
 			const firebase = require('../../conf/firebase');

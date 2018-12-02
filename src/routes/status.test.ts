@@ -29,6 +29,14 @@ jest.mock('../relay/status', () => ({
 		}
 	},
 }));
+jest.mock('../temperature-sensor/status', () => ({
+	__esModule: true,
+	default: {
+		get: () => {
+			return '42';
+		}
+	},
+}));
 
 describe('Status socket: integration', () => {
 	let _socketClient: socketIoServer.Socket;
@@ -74,6 +82,10 @@ describe('Status socket: integration', () => {
 							{
 								type: 'relay',
 								status: 'test1',
+							},
+							{
+								type: 'temperatureSensor',
+								status: '42',
 							},
 						],
 					},

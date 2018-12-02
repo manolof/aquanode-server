@@ -4,6 +4,7 @@ import { CONFIG } from '../../conf/config';
 import { temperatureLogCollection } from '../../conf/firebase';
 import { Interval } from '../interval';
 import { logger } from '../logger';
+import status from './status';
 import { TemperatureSensor } from './temperature-sensor';
 
 jest.useFakeTimers();
@@ -20,10 +21,12 @@ jest.mock('../../conf/firebase', () => ({
 	},
 }));
 jest.mock('../logger');
+jest.mock('./status');
 
 describe('TemperatureSensor', () => {
 	const intervalStart = jest.spyOn(Interval.prototype, 'start');
 	const loggerError = jest.spyOn(logger, 'error');
+	const statusSet = jest.spyOn(status, 'set');
 	const temperatureLogCollectionAdd = jest.spyOn(temperatureLogCollection, 'add');
 	const originalProcessEnv = process.env;
 
@@ -50,6 +53,7 @@ describe('TemperatureSensor', () => {
 
 			expect(loggerError).not.toHaveBeenCalled();
 			expect(intervalStart).toHaveBeenCalledTimes(1);
+			expect(statusSet).toHaveBeenCalledWith('42');
 			expect(temperatureLogCollectionAdd).toHaveBeenCalledWith({
 				temperature: 42,
 				date: expect.any(Date),

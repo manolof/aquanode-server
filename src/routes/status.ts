@@ -5,6 +5,7 @@ import { Interval } from '../interval';
 import lightsStatus from '../lights/status';
 import { logger } from '../logger';
 import relayStatus from '../relay/status';
+import temperatureSensorStatus from '../temperature-sensor/status';
 
 export function status(socketServer: socketIo.Server) {
 	socketServer
@@ -34,6 +35,10 @@ function onGet(clientSocket: socketIo.Socket) {
 			{
 				type: 'relay',
 				status: relayStatus.get(),
+			},
+			{
+				type: 'temperatureSensor',
+				status: temperatureSensorStatus.get(),
 			},
 		],
 	};
