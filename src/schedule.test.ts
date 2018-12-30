@@ -1,3 +1,4 @@
+import { scheduledJobs } from 'node-schedule';
 import { BaseSchedule } from './schedule';
 
 jest.mock('./logger');
@@ -19,16 +20,16 @@ const mockScheduleConfig = [
 	},
 ];
 
-const mockScheduleJobs = [
-	{
-		job_name: `${mockScheduleConfig[0].state}-${mockScheduleConfig[0].time.hour}:${mockScheduleConfig[0].time.minute}`,
-		job_next_run: expect.any(Date),
-	},
-	{
-		job_name: `${mockScheduleConfig[1].state}-${mockScheduleConfig[1].time.hour}:${mockScheduleConfig[1].time.minute}`,
-		job_next_run: expect.any(Date),
-	},
-];
+const mockScheduleJobs = () => {
+	return mockScheduleConfig.map((schedule) => {
+		const jobName = `${schedule.state}-${schedule.time.hour}:${schedule.time.minute}`;
+
+		return {
+			job_name: jobName,
+			job_next_run: scheduledJobs[jobName].nextInvocation(),
+		};
+	});
+};
 
 class TestSchedule extends BaseSchedule {
 	public static mockFunction(...params) {
@@ -62,7 +63,7 @@ describe('Schedule', () => {
 	describe('setSchedules', () => {
 		it('should set the schedules', () => {
 			TestSchedule._setSchedules();
-			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs);
+			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs());
 		});
 	});
 
