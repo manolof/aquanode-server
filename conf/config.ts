@@ -7,7 +7,7 @@ export const CONFIG: Config = {
 		red: 17,
 		green: 27,
 		blue: 22,
-		relay: 1,
+		relay: 26,
 	},
 	fadeDuration: 1800000,
 	temperatureSensorInterval: 60000,
