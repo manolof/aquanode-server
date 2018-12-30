@@ -20,14 +20,14 @@ export const lightsSchedule: Schedule[] = [
 	{
 		time: {
 			hour: 7,
-			minute: 30,
+			minute: 15,
 		},
 		state: LightsStatus.off,
 	},
 	{
 		time: {
 			hour: 13,
-			minute: 30,
+			minute: 15,
 		},
 		state: LightsStatus.day,
 	},
@@ -41,7 +41,7 @@ export const lightsSchedule: Schedule[] = [
 	{
 		time: {
 			hour: 23,
-			minute: 0,
+			minute: 30,
 		},
 		state: LightsStatus.off,
 	},
@@ -65,7 +65,7 @@ export const relaySchedule: Schedule[] = [
 	{
 		time: {
 			hour: 14,
-			minute: 30,
+			minute: 0,
 		},
 		state: RelayStatus.off,
 	},

@@ -1,104 +1,90 @@
-import * as bodyParser from 'body-parser';
-import * as express from 'express';
-import * as request from 'supertest';
+import * as socketIoServer from 'socket.io';
+import * as socketIoClient from 'socket.io-client';
 
-import { LightsStatus } from '../lights/interfaces';
 import { LightsSchedule } from '../lights/schedule';
-import { logger } from '../logger';
-import scheduleRoutes from './schedule';
+import { schedule } from './schedule';
 
-jest.mock('../app');
-jest.mock('../logger');
 jest.mock('../lights/schedule', () => ({
 	LightsSchedule: {
 		getSchedules: () => {
 			return [];
 		},
-		forceSchedule: (...params) => {
+		forceSchedule: () => {
 			//
 		},
-		resetSchedule: (...params) => {
+		resetSchedule: () => {
 			//
 		},
 	},
 }));
+jest.mock('../logger');
 
-describe('Schedule routes', () => {
-	const loggerInfo = jest.spyOn(logger, 'info');
+describe('Schedule socket: integration', () => {
 	const lightsForceSchedule = jest.spyOn(LightsSchedule, 'forceSchedule');
 	const lightsResetSchedule = jest.spyOn(LightsSchedule, 'resetSchedule');
 
-	const app: express.Application = express();
-	app.use(bodyParser.json());
-	app.use(bodyParser.urlencoded({ extended: false }));
-	app.use('/api', scheduleRoutes);
+	let _socketClient: socketIoServer.Socket;
+	let _socketServer: socketIoServer.Server;
 
-	describe('GET /schedule', () => {
-		it('should return the schedule', (done) => {
-			request(app)
-				.get('/api/schedule')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect((res) => {
-					expect(loggerInfo).toHaveBeenCalled();
+	beforeEach(() => {
+		_socketServer = socketIoServer.listen(1337);
+		_socketClient = socketIoClient.connect('http://0.0.0.0:1337/schedule');
+		schedule(_socketServer);
+	});
 
-					expect(res.body).toEqual({
-						data: [],
-					});
-				})
-				.end((err) => {
-					if (err) {
-						return done(err);
-					}
-					done();
-				});
+	afterEach(() => {
+		_socketClient.disconnect();
+		_socketServer.close();
+	});
+
+	it('should set up the namespace', (done: () => void) => {
+		_socketClient.once('connect', () => {
+			expect(_socketServer.engine['clientsCount']).toBe(1);
+			expect(
+				Object.keys(_socketServer.nsps)
+					.some((nsp) => _socketServer.nsps[nsp].name === '/schedule')
+			).toBe(true);
+
+			done();
 		});
 	});
 
-	describe('POST /schedule', () => {
-		it('should force a schedule change', (done) => {
-			request(app)
-				.post('/api/schedule')
-				.send({ schedule: LightsStatus.night })
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect((res) => {
-					expect(loggerInfo).toHaveBeenCalled();
-					expect(lightsForceSchedule).toHaveBeenCalledWith(LightsStatus.night);
+	it('should emit the schedule on connect', (done: () => void) => {
+		_socketClient.once('connect', () => {
+			_socketClient.once('get', (msg) => {
+				expect(msg).toEqual({ data: [] });
 
-					expect(res.body).toEqual({
-						data: [],
-					});
-				})
-				.end((err) => {
-					if (err) {
-						return done(err);
-					}
-					done();
-				});
+				done();
+			});
 		});
 	});
 
-	describe('POST /schedule/reset', () => {
-		it('should reset the schedule to the predefined', (done) => {
-			request(app)
-				.post('/api/schedule/reset')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect((res) => {
-					expect(loggerInfo).toHaveBeenCalled();
-					expect(lightsResetSchedule).toHaveBeenCalled();
+	it(`should receive a 'set' event and re-emit the schedule`, (done: () => void) => {
+		_socketServer.of('/schedule')
+			.once('connection', (clientSocket: socketIoServer.Socket) => {
+				_socketClient.emit('set', 'night');
+				expect(lightsForceSchedule).not.toHaveBeenCalled();
 
-					expect(res.body).toEqual({
-						data: [],
-					});
-				})
-				.end((err) => {
-					if (err) {
-						return done(err);
-					}
+				clientSocket.once('set', (message) => {
+					expect(message).toBe('night');
+					expect(lightsForceSchedule).toHaveBeenCalledTimes(1);
+
 					done();
 				});
-		});
+			});
+	});
+
+	it(`should receive a 'reset' event and re-emit the schedule`, (done: () => void) => {
+		_socketServer.of('/schedule')
+			.once('connection', (clientSocket: socketIoServer.Socket) => {
+				_socketClient.emit('reset');
+				expect(lightsResetSchedule).not.toHaveBeenCalled();
+
+				clientSocket.once('reset', () => {
+					expect(lightsResetSchedule).toHaveBeenCalledTimes(1);
+
+					done();
+				});
+			});
 	});
 });

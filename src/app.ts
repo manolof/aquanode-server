@@ -1,45 +1,35 @@
-import * as bodyParser from 'body-parser';
-import * as cors from 'cors';
-import * as errorHandler from 'errorhandler';
-import * as express from 'express';
+import * as http from 'http';
+import * as socketIo from 'socket.io';
 
 import { CONFIG } from '../conf/config';
 import { LightsSchedule } from './lights/schedule';
-// import { RelaySchedule } from './relay/schedule';
-import scheduleRoutes from './routes/schedule';
-import statusRoutes from './routes/status';
+import { RelaySchedule } from './relay/schedule';
+import { schedule } from './routes/schedule';
+import { status } from './routes/status';
+import { temperature } from './routes/temperature';
 import { TemperatureSensor } from './temperature-sensor/temperature-sensor';
 
-const app: express.Application = express();
+const app: http.Server = http.createServer();
+const socketIoOptions = {
+	pingTimeout: CONFIG.socketEmitInterval,
+	pingInterval: CONFIG.socketEmitInterval,
+};
 
-config(app);
+const socketIoServer: socketIo.Server = socketIo(app, socketIoOptions);
+
 runSchedules();
-routes(app);
-
-function config(_app) {
-	_app.set('port', CONFIG.port);
-
-	// Enable cors for all routes and origins
-	_app.use(cors());
-
-	_app.use(bodyParser.json());
-
-	_app.use(bodyParser.urlencoded({
-		extended: false,
-	}));
-
-	_app.use(errorHandler());
-}
-
-function routes(_app) {
-	_app.use('/api', statusRoutes);
-	_app.use('/api', scheduleRoutes);
-}
+handleSockets(socketIoServer);
 
 function runSchedules() {
 	LightsSchedule.init();
 	TemperatureSensor.init();
-	// RelaySchedule.init();
+	RelaySchedule.init();
+}
+
+function handleSockets(_socketIoServer: socketIo.Server) {
+	status(_socketIoServer);
+	schedule(_socketIoServer);
+	temperature(_socketIoServer);
 }
 
 export {

@@ -1,12 +1,17 @@
-import * as bodyParser from 'body-parser';
-import * as express from 'express';
-import * as request from 'supertest';
+import * as socketIoServer from 'socket.io';
+import * as socketIoClient from 'socket.io-client';
 
-import { logger } from '../logger';
-import statusRoutes from './status';
+import { CONFIG } from '../../conf/config';
+import { status } from './status';
 
-jest.mock('../app');
-jest.mock('../logger');
+jest.useFakeTimers();
+
+jest.mock('../../conf/config', () => ({
+	CONFIG: {
+		logFile: 'log.log',
+		socketEmitInterval: 500,
+	},
+}));
 jest.mock('../lights/status', () => ({
 	__esModule: true,
 	default: {
@@ -15,6 +20,7 @@ jest.mock('../lights/status', () => ({
 		}
 	},
 }));
+jest.mock('../logger');
 jest.mock('../relay/status', () => ({
 	__esModule: true,
 	default: {
@@ -23,47 +29,70 @@ jest.mock('../relay/status', () => ({
 		}
 	},
 }));
+jest.mock('../temperature-sensor/status', () => ({
+	__esModule: true,
+	default: {
+		get: () => {
+			return '42';
+		}
+	},
+}));
 
-describe('Status routes', () => {
-	const loggerInfo = jest.spyOn(logger, 'info');
+describe('Status socket: integration', () => {
+	let _socketClient: socketIoServer.Socket;
+	let _socketServer: socketIoServer.Server;
 
-	const app: express.Application = express();
-	app.use(bodyParser.json());
-	app.use(bodyParser.urlencoded({ extended: false }));
-	app.use('/api', statusRoutes);
+	beforeEach(() => {
+		_socketServer = socketIoServer.listen(1338);
+		_socketClient = socketIoClient.connect('http://0.0.0.0:1338/status');
+		status(_socketServer);
+	});
 
-	describe('GET /status', () => {
-		it('should return the status', (done) => {
-			request(app)
-				.get('/api/status')
-				.expect('Content-Type', /json/)
-				.expect(200)
-				.expect((res) => {
-					expect(loggerInfo).toHaveBeenCalled();
+	afterEach(() => {
+		jest.clearAllTimers();
+		_socketClient.disconnect();
+		_socketServer.close();
+	});
 
-					expect(res.body).toEqual({
-						data: {
-							time: expect.any(String),
-							entities: [
-								{
-									type: 'lights',
-									status: 'test1',
-								},
-								{
-									type: 'relay',
-									status: 'test1',
-								},
-							],
+	it('should set up the namespace', (done: () => void) => {
+		_socketClient.once('connect', () => {
+			expect(_socketServer.engine['clientsCount']).toBe(1);
+			expect(
+				Object.keys(_socketServer.nsps)
+					.some((nsp) => _socketServer.nsps[nsp].name === '/status')
+			).toBe(true);
 
-						},
-					});
-				})
-				.end((err) => {
-					if (err) {
-						return done(err);
-					}
-					done();
+			done();
+		});
+	});
+
+	it('should emit the status on connect', (done: () => void) => {
+		_socketClient.once('connect', () => {
+			jest.advanceTimersByTime(CONFIG.socketEmitInterval);
+
+			_socketClient.once('get', (msg) => {
+				expect(msg).toEqual({
+					data: {
+						time: expect.any(String),
+						entities: [
+							{
+								type: 'lights',
+								status: 'test1',
+							},
+							{
+								type: 'relay',
+								status: 'test1',
+							},
+							{
+								type: 'temperatureSensor',
+								status: '42',
+							},
+						],
+					},
 				});
+
+				done();
+			});
 		});
 	});
 });

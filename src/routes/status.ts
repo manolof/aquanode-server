@@ -1,14 +1,30 @@
-import { Request, Response, Router } from 'express';
+import * as socketIo from 'socket.io';
 
+import { CONFIG } from '../../conf/config';
+import { Interval } from '../interval';
 import lightsStatus from '../lights/status';
 import { logger } from '../logger';
 import relayStatus from '../relay/status';
+import temperatureSensorStatus from '../temperature-sensor/status';
 
-const router: Router = Router();
+export function status(socketServer: socketIo.Server) {
+	socketServer
+		.of('status')
+		.on('connection', (clientSocket: socketIo.Socket) => {
+			logger.info('Serving the status');
 
-router.get('/status', (req: Request, res: Response) => {
-	logger.info('Serving the status');
+			const interval = statusInterval(clientSocket);
 
+			interval.start();
+
+			clientSocket.on('disconnect', () => {
+				logger.info('Status client disconnected');
+				interval.stop();
+			});
+		});
+}
+
+function onGet(clientSocket: socketIo.Socket) {
 	const extendedStatus = {
 		time: new Date().toISOString(),
 		entities: [
@@ -20,14 +36,23 @@ router.get('/status', (req: Request, res: Response) => {
 				type: 'relay',
 				status: relayStatus.get(),
 			},
+			{
+				type: 'temperatureSensor',
+				status: temperatureSensorStatus.get(),
+			},
 		],
 	};
 
-	res.send(
-		{
-			data: extendedStatus,
-		},
-	);
-});
+	clientSocket.emit('get', {
+		data: extendedStatus,
+	});
+}
 
-export default router;
+function statusInterval(clientSocket: socketIo.Socket) {
+	return new Interval(() => {
+		logger.debug('emitting status...');
+
+		onGet(clientSocket);
+
+	}, CONFIG.socketEmitInterval);
+}
