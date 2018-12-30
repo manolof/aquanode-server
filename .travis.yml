@@ -23,7 +23,6 @@ cache:
     - "$HOME/.npm"
 before_script:
   - npm install -g codecov
-  - npm install -g typescript
   - npm install -g pm2
 script:
   - cd $TRAVIS_BUILD_DIR
