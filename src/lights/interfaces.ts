@@ -1,3 +1,5 @@
+export type LightsNamespace = 'lights';
+
 export enum Fade {
 	in,
 	out,

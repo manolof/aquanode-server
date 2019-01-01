@@ -1,6 +1,6 @@
-import { LightsConfig, LightsPins, LightsStatus } from './lights/interfaces';
-import { RelayPins, RelayStatus } from './relay/interfaces';
-import { TemperatureSensorConfig } from './temperature-sensor/interfaces';
+import { LightsConfig, LightsNamespace, LightsPins, LightsStatus } from './lights/interfaces';
+import { RelayNamespace, RelayPins, RelayStatus } from './relay/interfaces';
+import { TemperatureSensorConfig, TemperatureSensorNamespace } from './temperature-sensor/interfaces';
 
 interface Time {
 	hour: number;
@@ -9,6 +9,8 @@ interface Time {
 
 interface Pins extends LightsPins, RelayPins {
 }
+
+export type CombinedNamespaces = LightsNamespace | RelayNamespace | TemperatureSensorNamespace;
 
 export type CombinedStatus = LightsStatus | RelayStatus;
 

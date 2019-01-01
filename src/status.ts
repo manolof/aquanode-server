@@ -1,9 +1,10 @@
+import { CombinedNamespaces } from './interfaces';
 import { logger } from './logger';
 
 export class Status {
 	private _status: string;
 
-	constructor(private id: string) {
+	constructor(private id: CombinedNamespaces) {
 	}
 
 	public get(): string {
