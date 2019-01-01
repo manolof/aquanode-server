@@ -1,18 +1,13 @@
 import { Job, RecurrenceRule, scheduleJob } from 'node-schedule';
 
-import { CombinedStatus, Schedule } from './interfaces';
+import { CombinedStatus, Schedule, ScheduleJob } from './interfaces';
 import { logger } from './logger';
 
-interface ScheduleJob {
-	job_name: string;
-	job_next_run: Date;
-}
+export class BaseSchedule {
 
-interface ScheduleResponse extends Array<ScheduleJob> {
-}
+	private jobs: Job[] = [];
 
-export abstract class BaseSchedule {
-	public static getSchedules(): ScheduleResponse {
+	public getSchedules(): ScheduleJob[] {
 		return this.jobs.map((job: Job) => {
 			return {
 				job_name: job.name,
@@ -21,11 +16,11 @@ export abstract class BaseSchedule {
 		});
 	}
 
-	protected static startClosestPastEvent(schedule: Schedule[], callback: (T: CombinedStatus) => void): void {
+	public startClosestPastEvent(schedule: Schedule[], callback: (T: CombinedStatus) => void): void {
 		callback(this.getClosestPastSchedule(schedule).state);
 	}
 
-	protected static setSchedules(schedule: Schedule[], callback: (T: CombinedStatus) => void): void {
+	public setSchedules(schedule: Schedule[], callback: (T: CombinedStatus) => void): void {
 		schedule.forEach((x: Schedule) => {
 			const recurrenceRule: RecurrenceRule = new RecurrenceRule();
 			recurrenceRule.hour = x.time.hour;
@@ -47,7 +42,7 @@ export abstract class BaseSchedule {
 		});
 	}
 
-	protected static cancelAllJobs(): void {
+	public cancelAllJobs(): void {
 		this.jobs.forEach((job: Job) => {
 			job.cancel();
 		});
@@ -55,9 +50,7 @@ export abstract class BaseSchedule {
 		this.jobs = [];
 	}
 
-	private static jobs: Job[] = [];
-
-	private static getClosestPastSchedule(schedule: Schedule[]): Schedule {
+	public getClosestPastSchedule(schedule: Schedule[]): Schedule {
 		const dateNow = Date.now();
 		const date = new Date(dateNow);
 		const currentHour = date.getHours();

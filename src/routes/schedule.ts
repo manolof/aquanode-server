@@ -3,6 +3,7 @@ import * as socketIo from 'socket.io';
 import { LightsStatus } from '../lights/interfaces';
 import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
+import { RelaySchedule } from '../relay/schedule';
 
 export function schedule(socketServer: socketIo.Server) {
 	socketServer
@@ -21,8 +22,13 @@ export function schedule(socketServer: socketIo.Server) {
 }
 
 function onGet(clientSocket: socketIo.Socket) {
+	const combinedSchedule = [
+		...LightsSchedule.getSchedules(),
+		...RelaySchedule.getSchedules(),
+	];
+
 	clientSocket.emit('get', {
-		data: LightsSchedule.getSchedules(),
+		data: combinedSchedule,
 	});
 }
 

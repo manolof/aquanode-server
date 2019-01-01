@@ -3,27 +3,40 @@ import { BaseSchedule } from '../schedule';
 import { LightsStatus } from './interfaces';
 import { Lights } from './lights';
 
-export class LightsSchedule extends BaseSchedule {
-	public static init() {
-		this.setSchedules(lightsSchedule, (state: LightsStatus) => {
-			Lights.setState(state);
-		});
+declare module '../schedule' {
+	interface BaseSchedule {
+		init(): void;
 
-		this.startClosestPastEvent(lightsSchedule, (state: LightsStatus) => {
-			Lights.setState(state);
-		});
+		forceSchedule(state: LightsStatus): void;
+
+		resetSchedule(): void;
 	}
+}
 
-	public static forceSchedule(state: LightsStatus): void {
-		this.cancelAllJobs();
+export const LightsSchedule = new BaseSchedule();
 
+LightsSchedule.constructor.prototype.init = init;
+LightsSchedule.constructor.prototype.forceSchedule = forceSchedule;
+LightsSchedule.constructor.prototype.resetSchedule = resetSchedule;
+
+function init() {
+	LightsSchedule.setSchedules(lightsSchedule, (state: LightsStatus) => {
 		Lights.setState(state);
-	}
+	});
 
-	public static resetSchedule(): void {
-		this.cancelAllJobs();
+	LightsSchedule.startClosestPastEvent(lightsSchedule, (state: LightsStatus) => {
+		Lights.setState(state);
+	});
+}
 
-		this.init();
-	}
+function forceSchedule(state: LightsStatus): void {
+	LightsSchedule.cancelAllJobs();
 
+	Lights.setState(state);
+}
+
+function resetSchedule(): void {
+	LightsSchedule.cancelAllJobs();
+
+	this.init();
 }

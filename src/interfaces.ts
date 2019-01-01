@@ -19,6 +19,11 @@ export interface Schedule {
 	state: CombinedStatus;
 }
 
+export interface ScheduleJob {
+	job_name: string;
+	job_next_run: Date;
+}
+
 export interface Config extends LightsConfig, TemperatureSensorConfig {
 	port: number;
 	pins: Pins;

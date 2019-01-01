@@ -1,30 +1,31 @@
 import { relaySchedule } from '../../conf/schedule';
 import { BaseSchedule } from '../schedule';
-// import { RelayStatus } from './interfaces';
+import { RelayStatus } from './interfaces';
 import { Relay } from './relay';
 
-export class RelaySchedule extends BaseSchedule {
-	public static init() {
-		this.setSchedules(relaySchedule, (state: string) => {
-			Relay.setState(state);
-		});
-
-		this.startClosestPastEvent(relaySchedule, (state: string) => {
-			Relay.setState(state);
-		});
+declare module '../schedule' {
+	interface BaseSchedule {
+		init(): void;
 	}
-
-	// TODO
-	// public static forceSchedule(state: RelayStatus): void {
-	// 	this.cancelAllJobs();
-	//
-	// 	Relay.setState(state);
-	// }
-	//
-	// public static resetSchedule(): void {
-	// 	this.cancelAllJobs();
-	//
-	// 	this.init();
-	// }
-
 }
+
+export const RelaySchedule = new BaseSchedule();
+
+RelaySchedule.constructor.prototype.init = init;
+
+function init() {
+	RelaySchedule.setSchedules(relaySchedule, (state: RelayStatus) => {
+		Relay.setState(state);
+	});
+
+	RelaySchedule.startClosestPastEvent(relaySchedule, (state: RelayStatus) => {
+		Relay.setState(state);
+	});
+}
+
+// TODO
+// function forceSchedule() {
+// }
+//
+// function resetSchedule() {
+// }
