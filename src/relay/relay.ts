@@ -12,7 +12,7 @@ import { RelayStatus } from './interfaces';
 import status from './status';
 
 export class Relay {
-	public static setState(state: string) {
+	public static setState(state: RelayStatus) {
 		const relay = new Relay();
 
 		switch (state) {

@@ -1,11 +1,17 @@
 import * as socketIo from 'socket.io';
 
 import { CONFIG } from '../../conf/config';
+import { CombinedNamespaces } from '../interfaces';
 import { Interval } from '../interval';
 import lightsStatus from '../lights/status';
 import { logger } from '../logger';
 import relayStatus from '../relay/status';
 import temperatureSensorStatus from '../temperature-sensor/status';
+
+interface StatusResponse {
+	time: string;
+	entities: Array<{ type: CombinedNamespaces, status: string }>;
+}
 
 export function status(socketServer: socketIo.Server) {
 	socketServer
@@ -25,7 +31,7 @@ export function status(socketServer: socketIo.Server) {
 }
 
 function onGet(clientSocket: socketIo.Socket) {
-	const extendedStatus = {
+	const extendedStatus: StatusResponse = {
 		time: new Date().toISOString(),
 		entities: [
 			{

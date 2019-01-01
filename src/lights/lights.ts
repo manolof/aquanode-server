@@ -30,7 +30,7 @@ export class Lights {
 				break;
 
 			default:
-				logger.error(`A light change was requested for an invalid state ${state}.
+				logger.error(`A lights change was requested for an invalid state ${state}.
 				Must be one of ${LightsStatus.day}, or ${LightsStatus.night}`);
 		}
 	}

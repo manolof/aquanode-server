@@ -1,9 +1,13 @@
 import * as socketIo from 'socket.io';
 
+import { ScheduleJob } from '../interfaces';
 import { LightsStatus } from '../lights/interfaces';
 import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
 import { RelaySchedule } from '../relay/schedule';
+
+interface ScheduleResponse extends Array<ScheduleJob> {
+}
 
 export function schedule(socketServer: socketIo.Server) {
 	socketServer
@@ -22,7 +26,7 @@ export function schedule(socketServer: socketIo.Server) {
 }
 
 function onGet(clientSocket: socketIo.Socket) {
-	const combinedSchedule = [
+	const combinedSchedule: ScheduleResponse = [
 		...LightsSchedule.getSchedules(),
 		...RelaySchedule.getSchedules(),
 	];
