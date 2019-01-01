@@ -8,20 +8,19 @@ export function schedule(socketServer: socketIo.Server) {
 	socketServer
 		.of('schedule')
 		.on('connection', (clientSocket: socketIo.Socket) => {
-			logger.info('Serving the schedule');
+			logger.debug('Serving the schedule');
 
 			onGet(clientSocket);
 			onSet(clientSocket);
 			onReset(clientSocket);
 
 			clientSocket.on('disconnect', () => {
-				logger.info('Schedule client disconnected');
+				logger.debug('Schedule client disconnected');
 			});
 		});
 }
 
 function onGet(clientSocket: socketIo.Socket) {
-	logger.debug('emitting schedule...');
 	clientSocket.emit('get', {
 		data: LightsSchedule.getSchedules(),
 	});
@@ -29,7 +28,7 @@ function onGet(clientSocket: socketIo.Socket) {
 
 function onSet(clientSocket: socketIo.Socket) {
 	clientSocket.on('set', (status: LightsStatus) => {
-		logger.info('Updating the schedule');
+		logger.info('Updating the schedule to: ', status);
 
 		LightsSchedule.forceSchedule(status);
 

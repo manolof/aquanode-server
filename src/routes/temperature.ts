@@ -7,19 +7,17 @@ export function temperature(socketServer: socketIo.Server) {
 	socketServer
 		.of('temperature')
 		.on('connection', async (clientSocket: socketIo.Socket) => {
-			logger.info('Serving the temperature');
+			logger.debug('Serving the temperature');
 
 			await onGet(clientSocket);
 
 			clientSocket.on('disconnect', () => {
-				logger.info('Temperature client disconnected');
+				logger.debug('Temperature client disconnected');
 			});
 		});
 }
 
 async function onGet(clientSocket: socketIo.Socket) {
-	logger.debug('emitting temperature...');
-
 	const collectionSnapshot = await temperatureLogCollection.get();
 
 	clientSocket.emit('get', {

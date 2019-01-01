@@ -20,6 +20,6 @@ export interface Schedule {
 export interface Config extends LightsConfig, TemperatureSensorConfig {
 	port: number;
 	pins: Pins;
-	logFile: string;
+	logsPath: string;
 	socketEmitInterval: number;
 }

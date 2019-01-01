@@ -11,7 +11,7 @@ export class Status {
 	}
 
 	public set(value: string) {
-		logger.info(`Setting the ${this.id} to state "${value}"`);
+		logger.info(`Setting the ${this.id} to "${value}"`);
 		this._status = value;
 	}
 }

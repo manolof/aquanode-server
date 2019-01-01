@@ -8,5 +8,4 @@ The reason behind separating the app and server is that it won’t listen to the
 
 app.listen(CONFIG.port, () => {
 	logger.info(`App is running at http://localhost:${CONFIG.port} in ${process.env.NODE_ENV} mode`);
-	logger.info('Press CTRL-C to stop\n');
 });

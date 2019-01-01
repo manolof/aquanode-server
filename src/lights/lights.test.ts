@@ -21,7 +21,7 @@ jest.mock('../../conf/config', () => ({
 			relay: 5,
 		},
 		fadeDuration: 500,
-		logFile: 'log.log',
+		logsPath: 'log.log',
 		rgbSpectrum: {
 			red: [1, 2, 3],
 			green: [1, 2, 3],

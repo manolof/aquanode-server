@@ -13,7 +13,7 @@ describe('Status', () => {
 
 	it('should set the status for a particular item', () => {
 		mockStatus.set('ON');
-		expect(logger.info).toHaveBeenCalledWith(`Setting the ${mockStatusId} to state "ON"`);
+		expect(logger.info).toHaveBeenCalledWith(`Setting the ${mockStatusId} to "ON"`);
 	});
 
 	it('should get the status for a particular item', () => {

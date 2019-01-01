@@ -8,7 +8,7 @@ jest.useFakeTimers();
 
 jest.mock('../../conf/config', () => ({
 	CONFIG: {
-		logFile: 'log.log',
+		logsPath: 'log.log',
 		socketEmitInterval: 500,
 	},
 }));

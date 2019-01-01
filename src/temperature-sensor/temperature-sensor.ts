@@ -51,7 +51,7 @@ export class TemperatureSensor {
 
 			const [temperatureSensorId] = ids;
 
-			logger.info(`Sensor ID: ${temperatureSensorId}`);
+			logger.debug(`Sensor ID: ${temperatureSensorId}`);
 
 			new Interval(
 				() => {
@@ -65,7 +65,7 @@ export class TemperatureSensor {
 	}
 
 	private processTemperatureReading(temperature: number) {
-		logger.info(`Sensor temperature: ${temperature}`);
+		logger.debug(`Sensor temperature: ${temperature}`);
 
 		status.set(temperature.toString());
 

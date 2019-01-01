@@ -12,7 +12,7 @@ jest.useFakeTimers();
 jest.mock('../../conf/config', () => ({
 	CONFIG: {
 		temperatureSensorInterval: 500,
-		logFile: 'log.log',
+		logsPath: 'log.log',
 	},
 }));
 jest.mock('../../conf/firebase', () => ({

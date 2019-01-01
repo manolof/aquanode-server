@@ -11,14 +11,14 @@ export function status(socketServer: socketIo.Server) {
 	socketServer
 		.of('status')
 		.on('connection', (clientSocket: socketIo.Socket) => {
-			logger.info('Serving the status');
+			logger.debug('Serving the status');
 
 			const interval = statusInterval(clientSocket);
 
 			interval.start();
 
 			clientSocket.on('disconnect', () => {
-				logger.info('Status client disconnected');
+				logger.debug('Status client disconnected');
 				interval.stop();
 			});
 		});
@@ -50,8 +50,6 @@ function onGet(clientSocket: socketIo.Socket) {
 
 function statusInterval(clientSocket: socketIo.Socket) {
 	return new Interval(() => {
-		logger.debug('emitting status...');
-
 		onGet(clientSocket);
 
 	}, CONFIG.socketEmitInterval);
