@@ -6,9 +6,9 @@ export enum Fade {
 }
 
 export enum LightsStatus {
-	day = 'day',
-	night = 'night',
-	off = 'off',
+	day = 'Lights: day',
+	night = 'Lights: night',
+	off = 'Lights: off',
 }
 
 export interface RgbSpectrum {
