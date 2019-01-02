@@ -11,8 +11,7 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test jest --forceExit --detectOpenHandles",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
-    "build:prod": "tsc",
-    "start:prod": "pm2 start ecosystem.config.js",
+    "start:prod": "tsc && pm2 start ecosystem.config.js",
     "start:dev": "cross-env NODE_ENV=development ./node_modules/nodemon/bin/nodemon.js -e ts -w ./src -x \"ts-node src/server.ts\"",
     "lint": "tslint src/**/*.ts --fix"
   },
