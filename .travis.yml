@@ -32,4 +32,4 @@ script:
   # Run build process
   - npm run start:prod
   # Kill PM2 server
-  - pm2 delete server
+  - pm2 delete 0
