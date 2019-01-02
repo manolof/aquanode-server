@@ -1,4 +1,5 @@
-import { scheduledJobs } from 'node-schedule';
+import { Job } from 'node-schedule';
+import { LightsStatus } from './lights/interfaces';
 import { BaseSchedule } from './schedule';
 
 jest.mock('./logger');
@@ -20,60 +21,34 @@ const mockScheduleConfig = [
 	},
 ];
 
-const mockScheduleJobs = () => {
-	return mockScheduleConfig.map((schedule) => {
-		const jobName = `${schedule.state}-${schedule.time.hour}:${schedule.time.minute}`;
+const [firstJob, secondJob] = mockScheduleConfig;
 
-		return {
-			job_name: jobName,
-			job_next_run: scheduledJobs[jobName].nextInvocation(),
-		};
-	});
+const mockScheduleJobs = {
+	[`0: ${firstJob.state}`]: expect.any(Job),
+	[`1: ${secondJob.state}`]: expect.any(Job),
 };
 
-class TestSchedule extends BaseSchedule {
-	public static mockFunction(...params) {
-		// nothing to do here
-	}
-
-	public static _startClosestPastEvent() {
-		this.startClosestPastEvent(mockScheduleConfig, (callback: any) => {
-			TestSchedule.mockFunction('startClosestPastEvent fired', callback);
-		});
-	}
-
-	public static _setSchedules() {
-		this.setSchedules(mockScheduleConfig, (callback: any) => {
-			// nothing to do here
-		});
-	}
-
-	public static _cancelAllJobs(): void {
-		this.cancelAllJobs();
+class MockNamespaceClass {
+	public static setState() {
+		//
 	}
 }
 
+const TestSchedule = new BaseSchedule(MockNamespaceClass, mockScheduleConfig);
+
 describe('Schedule', () => {
+	const setStateSpy = jest.spyOn(MockNamespaceClass, 'setState');
+
 	describe('getSchedules', () => {
 		it('should get the schedules', () => {
-			expect(TestSchedule.getSchedules()).toEqual([]);
+			expect(TestSchedule.getSchedules()).toEqual({});
 		});
 	});
 
-	describe('setSchedules', () => {
+	describe('init', () => {
 		it('should set the schedules', () => {
-			TestSchedule._setSchedules();
-			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs());
-		});
-	});
-
-	describe('startClosestPastEvent', () => {
-		jest.spyOn(TestSchedule, 'mockFunction');
-
-		const realDateNow = Date.now;
-
-		afterAll(() => {
-			Date.now = realDateNow;
+			TestSchedule.init();
+			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs);
 		});
 
 		it('should start the closest schedule event in the past from current time', () => {
@@ -82,20 +57,35 @@ describe('Schedule', () => {
 
 			Date.now = jest.fn(() => beforeOn);
 
-			TestSchedule._startClosestPastEvent();
-			expect(TestSchedule.mockFunction).toHaveBeenCalledWith(expect.any(String), 'on');
+			TestSchedule.init();
+			expect(setStateSpy).toHaveBeenLastCalledWith(firstJob.state);
 
 			Date.now = jest.fn(() => afterOn);
 
-			TestSchedule._startClosestPastEvent();
-			expect(TestSchedule.mockFunction).toHaveBeenCalledWith(expect.any(String), 'off');
+			TestSchedule.init();
+			expect(setStateSpy).toHaveBeenLastCalledWith(secondJob.state);
 		});
 	});
 
-	describe('cancelAllJobs', () => {
-		it('should cancel all scheduled jobs', () => {
-			TestSchedule._cancelAllJobs();
-			expect(TestSchedule.getSchedules()).toEqual([]);
+	describe('forceSchedule', () => {
+		it('should force a new schedule', () => {
+			TestSchedule.init();
+			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs);
+
+			TestSchedule.forceSchedule(LightsStatus.off);
+			expect(TestSchedule.getSchedules()).toEqual({});
+			expect(setStateSpy).toHaveBeenLastCalledWith(LightsStatus.off);
+		});
+	});
+
+	describe('resetSchedule', () => {
+		it('should reset the schedule and start new', () => {
+			TestSchedule.forceSchedule(LightsStatus.off);
+			expect(TestSchedule.getSchedules()).toEqual({});
+
+			TestSchedule.resetSchedule();
+			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs);
+
 		});
 	});
 

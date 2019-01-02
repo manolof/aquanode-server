@@ -1,12 +1,10 @@
 import * as socketIo from 'socket.io';
-
-import { ScheduleJob } from '../interfaces';
 import { LightsStatus } from '../lights/interfaces';
 import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
 import { RelaySchedule } from '../relay/schedule';
 
-interface ScheduleResponse extends Array<ScheduleJob> {
+interface ScheduleResponse extends Array<{ job_name: string, job_next_run: Date }> {
 }
 
 export function schedule(socketServer: socketIo.Server) {
@@ -26,19 +24,25 @@ export function schedule(socketServer: socketIo.Server) {
 }
 
 function onGet(clientSocket: socketIo.Socket) {
-	const combinedSchedule: ScheduleResponse = [
+	const combinedSchedule = {
 		...LightsSchedule.getSchedules(),
 		...RelaySchedule.getSchedules(),
-	];
+	};
+
+	const response: ScheduleResponse =
+		Object.keys(combinedSchedule).map((job: string) => ({
+			job_name: combinedSchedule[job].name,
+			job_next_run: combinedSchedule[job].nextInvocation(),
+		}));
 
 	clientSocket.emit('get', {
-		data: combinedSchedule,
+		data: response,
 	});
 }
 
 function onSet(clientSocket: socketIo.Socket) {
 	clientSocket.on('set', (status: LightsStatus) => {
-		logger.info('Updating the schedule to: ', status);
+		logger.info('Updating the schedule');
 
 		LightsSchedule.forceSchedule(status);
 

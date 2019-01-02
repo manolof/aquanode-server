@@ -1,3 +1,4 @@
+import { CombinedNamespaces } from './interfaces';
 import { logger } from './logger';
 import { Status } from './status';
 
@@ -5,7 +6,7 @@ jest.mock('./logger');
 
 describe('Status', () => {
 	let mockStatus: Status;
-	const mockStatusId = 'mock1';
+	const mockStatusId = 'mock1' as CombinedNamespaces;
 
 	beforeAll(() => {
 		mockStatus = new Status(mockStatusId);
