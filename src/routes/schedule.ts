@@ -1,10 +1,17 @@
 import * as socketIo from 'socket.io';
-import { LightsStatus } from '../lights/interfaces';
+import { CombinedNamespaces, CombinedStatus } from '../interfaces';
 import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
 import { RelaySchedule } from '../relay/schedule';
 
-interface ScheduleResponse extends Array<{ job_name: string, job_next_run: Date }> {
+interface Schedule {
+	job_name: string;
+	job_next_run: Date;
+}
+
+interface ScheduleResponse {
+	lights: Schedule[];
+	relay: Schedule[];
 }
 
 export function schedule(socketServer: socketIo.Server) {
@@ -24,16 +31,19 @@ export function schedule(socketServer: socketIo.Server) {
 }
 
 function onGet(clientSocket: socketIo.Socket) {
-	const combinedSchedule = {
-		...LightsSchedule.getSchedules(),
-		...RelaySchedule.getSchedules(),
+	const lightsSchedule = LightsSchedule.getSchedules();
+	const relaySchedule = RelaySchedule.getSchedules();
+	const transformSchedule = (_schedule) => {
+		return Object.keys(_schedule).map((job: string) => ({
+			job_name: _schedule[job].name,
+			job_next_run: _schedule[job].nextInvocation(),
+		}));
 	};
 
-	const response: ScheduleResponse =
-		Object.keys(combinedSchedule).map((job: string) => ({
-			job_name: combinedSchedule[job].name,
-			job_next_run: combinedSchedule[job].nextInvocation(),
-		}));
+	const response: ScheduleResponse = {
+		lights: transformSchedule(lightsSchedule),
+		relay: transformSchedule(relaySchedule),
+	};
 
 	clientSocket.emit('get', {
 		data: response,
@@ -41,20 +51,38 @@ function onGet(clientSocket: socketIo.Socket) {
 }
 
 function onSet(clientSocket: socketIo.Socket) {
-	clientSocket.on('set', (status: LightsStatus) => {
+	clientSocket.on('set', (payload: { type: CombinedNamespaces, value: CombinedStatus }) => {
+		const { type, value } = payload;
 		logger.info('Updating the schedule');
 
-		LightsSchedule.forceSchedule(status);
+		switch (type) {
+			case 'lights':
+				LightsSchedule.forceSchedule(value);
+				break;
+
+			case 'relay':
+				RelaySchedule.forceSchedule(value);
+				break;
+		}
 
 		onGet(clientSocket);
 	});
 }
 
 function onReset(clientSocket: socketIo.Socket) {
-	clientSocket.on('reset', () => {
+	clientSocket.on('reset', (payload: { type: CombinedNamespaces }) => {
+		const { type } = payload;
 		logger.info('Resetting the schedule');
 
-		LightsSchedule.resetSchedule();
+		switch (type) {
+			case 'lights':
+				LightsSchedule.resetSchedule();
+				break;
+
+			case 'relay':
+				RelaySchedule.resetSchedule();
+				break;
+		}
 
 		onGet(clientSocket);
 	});

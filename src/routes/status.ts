@@ -10,7 +10,9 @@ import temperatureSensorStatus from '../temperature-sensor/status';
 
 interface StatusResponse {
 	time: string;
-	entities: Array<{ type: CombinedNamespaces, status: string }>;
+	entities: {
+		[type in CombinedNamespaces]: string
+	};
 }
 
 export function status(socketServer: socketIo.Server) {
@@ -33,20 +35,11 @@ export function status(socketServer: socketIo.Server) {
 function onGet(clientSocket: socketIo.Socket) {
 	const extendedStatus: StatusResponse = {
 		time: new Date().toISOString(),
-		entities: [
-			{
-				type: 'lights',
-				status: lightsStatus.get(),
-			},
-			{
-				type: 'relay',
-				status: relayStatus.get(),
-			},
-			{
-				type: 'temperatureSensor',
-				status: temperatureSensorStatus.get(),
-			},
-		],
+		entities: {
+			lights: lightsStatus.get(),
+			relay: relayStatus.get(),
+			temperatureSensor: temperatureSensorStatus.get(),
+		},
 	};
 
 	clientSocket.emit('get', {

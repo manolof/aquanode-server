@@ -74,20 +74,11 @@ describe('Status socket: integration', () => {
 				expect(msg).toEqual({
 					data: {
 						time: expect.any(String),
-						entities: [
-							{
-								type: 'lights',
-								status: 'test1',
-							},
-							{
-								type: 'relay',
-								status: 'test1',
-							},
-							{
-								type: 'temperatureSensor',
-								status: '42',
-							},
-						],
+						entities: {
+							lights: 'test1',
+							relay: 'test1',
+							temperatureSensor: '42',
+						},
 					},
 				});
 

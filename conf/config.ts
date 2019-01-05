@@ -10,7 +10,7 @@ export const CONFIG: Config = {
 		relay: 23,
 	},
 	fadeDuration: 1800000,
-	temperatureSensorInterval: 300000,
+	temperatureSensorInterval: 600000,
 	socketEmitInterval: 1000,
 	logsPath: 'logs/',
 	rgbSpectrum: {

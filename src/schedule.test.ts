@@ -1,4 +1,4 @@
-import { Job } from 'node-schedule';
+import { Job, scheduledJobs } from 'node-schedule';
 import { LightsStatus } from './lights/interfaces';
 import { BaseSchedule } from './schedule';
 
@@ -23,9 +23,10 @@ const mockScheduleConfig = [
 
 const [firstJob, secondJob] = mockScheduleConfig;
 
-const mockScheduleJobs = {
-	[`0: ${firstJob.state}`]: expect.any(Job),
-	[`1: ${secondJob.state}`]: expect.any(Job),
+const mockScheduleJobs = (): Job[] => {
+	return Object.keys(scheduledJobs).map((jobKey: string) => {
+		return scheduledJobs[jobKey];
+	});
 };
 
 class MockNamespaceClass {
@@ -41,14 +42,14 @@ describe('Schedule', () => {
 
 	describe('getSchedules', () => {
 		it('should get the schedules', () => {
-			expect(TestSchedule.getSchedules()).toEqual({});
+			expect(TestSchedule.getSchedules()).toEqual([]);
 		});
 	});
 
 	describe('init', () => {
 		it('should set the schedules', () => {
 			TestSchedule.init();
-			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs);
+			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs());
 		});
 
 		it('should start the closest schedule event in the past from current time', () => {
@@ -69,11 +70,11 @@ describe('Schedule', () => {
 
 	describe('forceSchedule', () => {
 		it('should force a new schedule', () => {
-			TestSchedule.init();
-			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs);
+			TestSchedule.resetSchedule();
+			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs());
 
 			TestSchedule.forceSchedule(LightsStatus.off);
-			expect(TestSchedule.getSchedules()).toEqual({});
+			expect(TestSchedule.getSchedules()).toEqual([]);
 			expect(setStateSpy).toHaveBeenLastCalledWith(LightsStatus.off);
 		});
 	});
@@ -81,10 +82,10 @@ describe('Schedule', () => {
 	describe('resetSchedule', () => {
 		it('should reset the schedule and start new', () => {
 			TestSchedule.forceSchedule(LightsStatus.off);
-			expect(TestSchedule.getSchedules()).toEqual({});
+			expect(TestSchedule.getSchedules()).toEqual([]);
 
 			TestSchedule.resetSchedule();
-			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs);
+			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs());
 
 		});
 	});

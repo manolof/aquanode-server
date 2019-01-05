@@ -5,18 +5,22 @@ import { temperature } from './temperature';
 
 jest.mock('../../conf/firebase', () => ({
 	temperatureLogCollection: {
-		get: jest.fn(() => ({
-			docs: [
-				{
-					id: 'a1',
-					data: jest.fn(() => ({
-						date: {
-							toDate: jest.fn(() => '2018-12-02'),
+		limit: jest.fn(() => ({
+			orderBy: jest.fn(() => ({
+				get: jest.fn(() => ({
+					docs: [
+						{
+							id: 'a1',
+							data: jest.fn(() => ({
+								date: {
+									toDate: jest.fn(() => '2018-12-02'),
+								},
+								temperature: '42',
+							})),
 						},
-						temperature: '42',
-					})),
-				},
-			],
+					],
+				})),
+			})),
 		})),
 	},
 }));
@@ -28,7 +32,7 @@ describe('Temperature socket: integration', () => {
 
 	beforeEach(() => {
 		_socketServer = socketIoServer.listen(1339);
-		_socketClient = socketIoClient.connect('http://0.0.0.0:1339/temperature');
+		_socketClient = socketIoClient.connect('http://0.0.0.0:1339/recentTemperatures');
 		temperature(_socketServer);
 	});
 
@@ -42,7 +46,7 @@ describe('Temperature socket: integration', () => {
 			expect(_socketServer.engine['clientsCount']).toBe(1);
 			expect(
 				Object.keys(_socketServer.nsps)
-					.some((nsp) => _socketServer.nsps[nsp].name === '/temperature')
+					.some((nsp) => _socketServer.nsps[nsp].name === '/recentTemperatures')
 			).toBe(true);
 
 			done();
@@ -55,7 +59,6 @@ describe('Temperature socket: integration', () => {
 				expect(msg).toEqual({
 					data: [
 						{
-							id: 'a1',
 							date: '2018-12-02',
 							temperature: '42',
 						},

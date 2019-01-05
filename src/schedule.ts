@@ -1,6 +1,6 @@
-import { Job, RecurrenceRule, scheduledJobs, scheduleJob } from 'node-schedule';
+import { Job, RecurrenceRule, scheduleJob } from 'node-schedule';
 
-import { CombinedStatus, Schedule, ScheduleJobs } from './interfaces';
+import { CombinedStatus, Schedule } from './interfaces';
 import { logger } from './logger';
 
 export class BaseSchedule {
@@ -36,8 +36,8 @@ export class BaseSchedule {
 		this.init();
 	}
 
-	public getSchedules(): ScheduleJobs {
-		return scheduledJobs;
+	public getSchedules(): Job[] {
+		return this.jobs;
 	}
 
 	private startClosestPastEvent(schedule: Schedule[], callback: (T: CombinedStatus) => void): void {

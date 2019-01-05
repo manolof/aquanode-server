@@ -46,6 +46,8 @@ describe('TemperatureSensor', () => {
 			};
 
 			TemperatureSensor.init();
+			expect(statusSet).toHaveBeenCalledTimes(1);
+			expect(statusSet).toHaveBeenCalledWith('42');
 
 			jest.advanceTimersByTime(CONFIG.temperatureSensorInterval);
 
@@ -53,7 +55,7 @@ describe('TemperatureSensor', () => {
 
 			expect(loggerError).not.toHaveBeenCalled();
 			expect(intervalStart).toHaveBeenCalledTimes(1);
-			expect(statusSet).toHaveBeenCalledWith('42');
+			expect(statusSet).toHaveBeenCalledTimes(2);
 			expect(temperatureLogCollectionAdd).toHaveBeenCalledWith({
 				temperature: 42,
 				date: expect.any(Date),

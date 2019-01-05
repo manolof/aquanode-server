@@ -5,7 +5,7 @@ import { logger } from '../logger';
 
 export function temperature(socketServer: socketIo.Server) {
 	socketServer
-		.of('temperature')
+		.of('recentTemperatures')
 		.on('connection', async (clientSocket: socketIo.Socket) => {
 			logger.debug('Serving the temperature');
 
@@ -18,7 +18,10 @@ export function temperature(socketServer: socketIo.Server) {
 }
 
 async function onGet(clientSocket: socketIo.Socket) {
-	const collectionSnapshot = await temperatureLogCollection.get();
+	const collectionSnapshot = await temperatureLogCollection
+		.limit(200)
+		.orderBy('date', 'desc')
+		.get();
 
 	clientSocket.emit('get', {
 		data: collectionSnapshot.docs.map((doc) => {
@@ -29,7 +32,6 @@ async function onGet(clientSocket: socketIo.Socket) {
 			const dateObj = date.toDate();
 
 			return {
-				id: doc.id,
 				date: dateObj,
 				temperature,
 			};

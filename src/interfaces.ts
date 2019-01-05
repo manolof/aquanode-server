@@ -1,4 +1,3 @@
-import { Job } from 'node-schedule';
 import { LightsConfig, LightsNamespace, LightsPins, LightsStatus } from './lights/interfaces';
 import { RelayNamespace, RelayPins, RelayStatus } from './relay/interfaces';
 import { TemperatureSensorConfig, TemperatureSensorNamespace } from './temperature-sensor/interfaces';
@@ -18,10 +17,6 @@ export type CombinedStatus = LightsStatus | RelayStatus;
 export interface Schedule {
 	time: Time;
 	state: CombinedStatus;
-}
-
-export interface ScheduleJobs {
-	[jobName: string]: Job;
 }
 
 export interface Config extends LightsConfig, TemperatureSensorConfig {
