@@ -53,13 +53,13 @@ export class TemperatureSensor {
 
 			logger.debug(`Sensor ID: ${temperatureSensorId}`);
 
-			const temperature = sensor.temperatureSync(temperatureSensorId);
+			const temperature = () => sensor.temperatureSync(temperatureSensorId);
 
-			status.set(temperature.toString());
+			status.set(temperature().toString());
 
 			new Interval(
 				() => {
-					this.processTemperatureReading(temperature);
+					this.processTemperatureReading(temperature());
 				},
 				this.options.temperatureSensorInterval,
 			)
