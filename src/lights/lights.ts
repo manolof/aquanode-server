@@ -13,26 +13,28 @@ import { Fade, LightsStatus } from './interfaces';
 import status from './status';
 
 export class Lights {
-	public static setState(state: LightsStatus) {
+	public static setState(state: number) {
 		const lights = new Lights();
 
-		switch (state) {
-			case LightsStatus.day:
-				lights.setDay();
-				break;
+		lights.setLights(state);
 
-			case LightsStatus.night:
-				lights.setNight();
-				break;
-
-			case LightsStatus.off:
-				lights.setOff();
-				break;
-
-			default:
-				logger.error(`A lights change was requested for an invalid state ${state}.
-				Must be one of ${LightsStatus.day}, or ${LightsStatus.night}`);
-		}
+		// switch (state) {
+		// 	case LightsStatus.day:
+		// 		lights.setDay();
+		// 		break;
+		//
+		// 	case LightsStatus.night:
+		// 		lights.setNight();
+		// 		break;
+		//
+		// 	case LightsStatus.off:
+		// 		lights.setOff();
+		// 		break;
+		//
+		// 	default:
+		// 		logger.error(`A lights change was requested for an invalid state ${state}.
+		// 		Must be one of ${LightsStatus.day}, or ${LightsStatus.night}`);
+		// }
 	}
 
 	public static shutdown() {
@@ -92,6 +94,11 @@ export class Lights {
 		return ((this.options.end - this.options.start) * this.framerate) / this.options.fadeDuration;
 	}
 
+	private setLights(state: number) {
+		status.set(`${state}`);
+		this.fade2(state);
+	}
+
 	private setDay() {
 		status.set(LightsStatus.day);
 		this.fade(Fade.in);
@@ -105,6 +112,19 @@ export class Lights {
 	private setOff() {
 		status.set(LightsStatus.off);
 		this.off();
+	}
+
+	private fade2(mode: number) {
+		this.stop();
+
+		this.interval = new Interval(
+			() => {
+				this.calculateRate.bind(this, mode)();
+				this.setRgbLED();
+			},
+			this.framerate,
+		);
+		this.interval.start();
 	}
 
 	private fade(mode: Fade) {
@@ -168,6 +188,14 @@ export class Lights {
 		}
 
 		return;
+	}
+
+	private setRgbLED2(state: number) {
+		Object.keys(this.options.rgbLEDs)
+			.map((led) => {
+				this.options.rgbLEDs[led]
+					.pwmWrite(this.options.rgbSpectrum[led][this.colorFrame]);
+			});
 	}
 
 	private setRgbLED() {
