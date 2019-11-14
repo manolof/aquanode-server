@@ -1,8 +1,8 @@
 export type RelayNamespace = 'relay';
 
 export enum RelayStatus {
-	off = 'off',
-	on = 'on',
+	off = 0,
+	on = 1,
 }
 
 export interface RelayPins {
