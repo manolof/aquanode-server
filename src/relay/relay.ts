@@ -51,12 +51,12 @@ export class Relay {
 	}
 
 	private setOn(): void {
-		status.set(`${RelayStatus.on}`);
+		status.set(RelayStatus.on);
 		this.setRelay(0);
 	}
 
 	private setOff(): void {
-		status.set(`${RelayStatus.off}`);
+		status.set(RelayStatus.off);
 		this.setRelay(1);
 	}
 

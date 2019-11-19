@@ -46,7 +46,8 @@ export class Lights {
 	}
 
 	private setLights(state: LightsStatus): void {
-		status.set(`${state}`);
+		const { red, green, blue } = state;
+		status.set(`R: ${red}, G: ${green}, B: ${blue}`);
 		this.fade(state);
 	}
 
@@ -78,10 +79,10 @@ export class Lights {
 	}
 
 	private stopAll(): void {
-		Object.keys(this.intervals).forEach(this.stop);
+		Object.keys(this.intervals).forEach((led: string) => this.stop(led));
 	}
 
-	private stop(led): void {
+	private stop(led: string): void {
 		if (this.intervals[led] instanceof Interval) {
 			this.intervals[led].stop();
 		}
