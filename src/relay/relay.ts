@@ -12,24 +12,6 @@ import { RelayStatus } from './interfaces';
 import status from './status';
 
 export class Relay {
-	public static setState(state: RelayStatus) {
-		const relay = new Relay();
-
-		switch (state) {
-			case RelayStatus.on:
-				relay.setOn();
-				break;
-
-			case RelayStatus.off:
-				relay.setOff();
-				break;
-
-			default:
-				logger.error(`A relay change was requested for an invalid state ${state}.
-				Must be one of ${RelayStatus.on}, or ${RelayStatus.off}`);
-		}
-	}
-
 	public static shutdown() {
 		logger.info('Shutting the relay down, cleanup running');
 
@@ -59,13 +41,29 @@ export class Relay {
 		return Relay.instance;
 	}
 
+	public setState(state: RelayStatus) {
+		switch (state) {
+			case RelayStatus.on:
+				this.setOn();
+				break;
+
+			case RelayStatus.off:
+				this.setOff();
+				break;
+
+			default:
+				logger.error(`A relay change was requested for an invalid state ${state}.
+				Must be one of ${RelayStatus.on}, or ${RelayStatus.off}`);
+		}
+	}
+
 	private setOn() {
-		status.set(RelayStatus.on);
+		status.set(`${RelayStatus.on}`);
 		this.setRelay(0);
 	}
 
 	private setOff() {
-		status.set(RelayStatus.off);
+		status.set(`${RelayStatus.off}`);
 		this.setRelay(1);
 	}
 
