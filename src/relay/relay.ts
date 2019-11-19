@@ -12,7 +12,7 @@ import { RelayStatus } from './interfaces';
 import status from './status';
 
 export class Relay {
-	public static shutdown() {
+	public static shutdown(): void {
 		logger.info('Shutting the relay down, cleanup running');
 
 		try {
@@ -26,22 +26,15 @@ export class Relay {
 		process.exit(0);
 	}
 
-	private static instance: Relay;
 	private options;
 
 	constructor() {
 		this.options = {
 			relay: new Gpio(CONFIG.pins.relay, { mode: Gpio.OUTPUT }),
 		};
-
-		if (!Relay.instance) {
-			Relay.instance = this;
-		}
-
-		return Relay.instance;
 	}
 
-	public setState(state: RelayStatus) {
+	public setState(state: RelayStatus): void {
 		switch (state) {
 			case RelayStatus.on:
 				this.setOn();
@@ -57,17 +50,17 @@ export class Relay {
 		}
 	}
 
-	private setOn() {
+	private setOn(): void {
 		status.set(`${RelayStatus.on}`);
 		this.setRelay(0);
 	}
 
-	private setOff() {
+	private setOff(): void {
 		status.set(`${RelayStatus.off}`);
 		this.setRelay(1);
 	}
 
-	private setRelay(mode: number) {
+	private setRelay(mode: number): void {
 		this.options.relay.digitalWrite(mode);
 	}
 }

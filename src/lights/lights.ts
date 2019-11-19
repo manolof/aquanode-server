@@ -13,7 +13,7 @@ import { LightsStatus } from './interfaces';
 import status from './status';
 
 export class Lights {
-	public static shutdown() {
+	public static shutdown(): void {
 		logger.info('Shutting the lights down, cleanup running');
 
 		try {
@@ -27,7 +27,6 @@ export class Lights {
 		process.exit(0);
 	}
 
-	private static instance: Lights;
 	private intervals: { red?: Interval, green?: Interval, blue?: Interval } = {};
 	private options;
 
@@ -40,34 +39,28 @@ export class Lights {
 				blue: new Gpio(CONFIG.pins.blue, { mode: Gpio.OUTPUT }),
 			},
 		};
-
-		if (!Lights.instance) {
-			Lights.instance = this;
-		}
-
-		return Lights.instance;
 	}
 
-	public setState(state: LightsStatus) {
+	public setState(state: LightsStatus): void {
 		this.setLights(state);
 	}
 
-	private setLights(state: LightsStatus) {
+	private setLights(state: LightsStatus): void {
 		status.set(`${state}`);
 		this.fade(state);
 	}
 
-	private fade(state: LightsStatus) {
+	private fade(state: LightsStatus): void {
 		this.stopAll();
 
 		Object.keys(this.options.leds)
-			.map((led) => {
+			.forEach((led) => {
 				const ledInstance = this.options.leds[led];
-				const newValue = state[led];
-				const currValue = ledInstance.getPwmDutyCycle();
-
 				this.intervals[led] = new Interval(
 					() => {
+						const newValue = state[led];
+						const currValue = ledInstance.getPwmDutyCycle();
+
 						if (currValue < newValue) {
 							ledInstance.pwmWrite(currValue + 1);
 						}
@@ -84,11 +77,11 @@ export class Lights {
 			});
 	}
 
-	private stopAll() {
+	private stopAll(): void {
 		Object.keys(this.intervals).forEach(this.stop);
 	}
 
-	private stop(led) {
+	private stop(led): void {
 		if (this.intervals[led] instanceof Interval) {
 			this.intervals[led].stop();
 		}
