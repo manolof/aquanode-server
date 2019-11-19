@@ -9,34 +9,10 @@ const Gpio = pigpio.Gpio;
 import { CONFIG } from '../../conf/config';
 import { Interval } from '../interval';
 import { logger } from '../logger';
-import { Fade, LightsStatus } from './interfaces';
+import { LightsStatus } from './interfaces';
 import status from './status';
 
 export class Lights {
-	public static setState(state: number) {
-		const lights = new Lights();
-
-		lights.setLights(state);
-
-		// switch (state) {
-		// 	case LightsStatus.day:
-		// 		lights.setDay();
-		// 		break;
-		//
-		// 	case LightsStatus.night:
-		// 		lights.setNight();
-		// 		break;
-		//
-		// 	case LightsStatus.off:
-		// 		lights.setOff();
-		// 		break;
-		//
-		// 	default:
-		// 		logger.error(`A lights change was requested for an invalid state ${state}.
-		// 		Must be one of ${LightsStatus.day}, or ${LightsStatus.night}`);
-		// }
-	}
-
 	public static shutdown() {
 		logger.info('Shutting the lights down, cleanup running');
 
@@ -52,19 +28,13 @@ export class Lights {
 	}
 
 	private static instance: Lights;
-	private count = 0;
-	private interval: Interval;
+	private intervals: { red?: Interval, green?: Interval, blue?: Interval } = {};
 	private options;
 
 	constructor() {
 		this.options = {
-			fadeDuration: CONFIG.fadeDuration,
-			rgbSpectrum: CONFIG.rgbSpectrum,
-			colorRange: 300,
-			start: 0,
-			end: 255,
-			whiteLED: new Gpio(CONFIG.pins.white, { mode: Gpio.OUTPUT }),
-			rgbLEDs: {
+			fadeInterval: CONFIG.fadeInterval,
+			leds: {
 				red: new Gpio(CONFIG.pins.red, { mode: Gpio.OUTPUT }),
 				green: new Gpio(CONFIG.pins.green, { mode: Gpio.OUTPUT }),
 				blue: new Gpio(CONFIG.pins.blue, { mode: Gpio.OUTPUT }),
@@ -78,136 +48,50 @@ export class Lights {
 		return Lights.instance;
 	}
 
-	private get colorFrame(): number {
-		return Math.floor(this.count * (this.options.colorRange / this.options.end));
+	public setState(state: LightsStatus) {
+		this.setLights(state);
 	}
 
-	private get whiteFrame(): number {
-		return Math.floor(this.count);
-	}
-
-	private get framerate(): number {
-		return Math.floor(this.options.fadeDuration / this.options.end);
-	}
-
-	private get difference(): number {
-		return ((this.options.end - this.options.start) * this.framerate) / this.options.fadeDuration;
-	}
-
-	private setLights(state: number) {
+	private setLights(state: LightsStatus) {
 		status.set(`${state}`);
-		this.fade2(state);
+		this.fade(state);
 	}
 
-	private setDay() {
-		status.set(LightsStatus.day);
-		this.fade(Fade.in);
-	}
+	private fade(state: LightsStatus) {
+		this.stopAll();
 
-	private setNight() {
-		status.set(LightsStatus.night);
-		this.fade(Fade.out);
-	}
-
-	private setOff() {
-		status.set(LightsStatus.off);
-		this.off();
-	}
-
-	private fade2(mode: number) {
-		this.stop();
-
-		this.interval = new Interval(
-			() => {
-				this.calculateRate.bind(this, mode)();
-				this.setRgbLED();
-			},
-			this.framerate,
-		);
-		this.interval.start();
-	}
-
-	private fade(mode: Fade) {
-		this.stop();
-
-		this.interval = new Interval(
-			() => {
-				this.calculateRate.bind(this, mode)();
-				this.setWhiteLED();
-				this.setRgbLED();
-			},
-			this.framerate,
-		);
-		this.interval.start();
-	}
-
-	private stop() {
-		if (this.interval instanceof Interval) {
-			this.interval.stop();
-		}
-	}
-
-	private off() {
-		this.stop();
-
-		this.options.whiteLED.pwmWrite(0);
-
-		Object.keys(this.options.rgbLEDs)
+		Object.keys(this.options.leds)
 			.map((led) => {
-				this.options.rgbLEDs[led].pwmWrite(0);
-			});
+				const ledInstance = this.options.leds[led];
+				const newValue = state[led];
+				const currValue = ledInstance.getPwmDutyCycle();
 
-		this.count = 0;
-	}
-
-	private calculateRate(mode: Fade): void {
-		if (mode === Fade.in) {
-			if (this.count <= this.options.end - 1) {
-				this.count += this.difference;
-			}
-			else {
-				this.stop();
-				return;
-			}
-		}
-		else {
-			if (this.count > this.options.start) {
-				this.count -= this.difference;
-			}
-			else {
-				this.stop();
-				return;
-			}
-		}
-
-		if (this.count > this.options.end) {
-			this.count = this.options.end;
-		}
-		else if (this.count < this.options.start) {
-			this.count = this.options.start;
-		}
-
-		return;
-	}
-
-	private setRgbLED2(state: number) {
-		Object.keys(this.options.rgbLEDs)
-			.map((led) => {
-				this.options.rgbLEDs[led]
-					.pwmWrite(this.options.rgbSpectrum[led][this.colorFrame]);
+				this.intervals[led] = new Interval(
+					() => {
+						if (currValue < newValue) {
+							ledInstance.pwmWrite(currValue + 1);
+						}
+						else if (currValue > newValue) {
+							ledInstance.pwmWrite(currValue - 1);
+						}
+						else {
+							this.stop(led);
+						}
+					},
+					this.options.fadeInterval,
+				);
+				this.intervals[led].start();
 			});
 	}
 
-	private setRgbLED() {
-		Object.keys(this.options.rgbLEDs)
-			.map((led) => {
-				this.options.rgbLEDs[led]
-					.pwmWrite(this.options.rgbSpectrum[led][this.colorFrame]);
-			});
+	private stopAll() {
+		Object.keys(this.intervals).forEach(this.stop);
 	}
 
-	private setWhiteLED() {
-		this.options.whiteLED.pwmWrite(this.whiteFrame);
+	private stop(led) {
+		if (this.intervals[led] instanceof Interval) {
+			this.intervals[led].stop();
+		}
 	}
 }
 

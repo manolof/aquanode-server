@@ -20,13 +20,8 @@ jest.mock('../../conf/config', () => ({
 			blue: 4,
 			relay: 5,
 		},
-		fadeDuration: 500,
+		fadeInterval: 500,
 		logsPath: 'log.log',
-		rgbSpectrum: {
-			red: [1, 2, 3],
-			green: [1, 2, 3],
-			blue: [1, 2, 3],
-		},
 	},
 }));
 jest.mock('../logger');
@@ -57,11 +52,11 @@ describe('Lights', () => {
 			expect(gpioPwmWrite).not.toHaveBeenCalled();
 			expect(intervalStart).toHaveBeenCalled();
 
-			jest.advanceTimersByTime(CONFIG.fadeDuration);
+			jest.advanceTimersByTime(CONFIG.fadeInterval);
 			expect(gpioPwmWrite.mock.calls[0][0]).toBeLessThanOrEqual(1);
 
 			// Should call stop again once it reaches zero
-			jest.advanceTimersByTime(CONFIG.fadeDuration);
+			jest.advanceTimersByTime(CONFIG.fadeInterval);
 			expect(intervalStop).toHaveBeenCalledTimes(1);
 		});
 
@@ -74,11 +69,11 @@ describe('Lights', () => {
 			expect(gpioPwmWrite).not.toHaveBeenCalled();
 			expect(intervalStart).toHaveBeenCalled();
 
-			jest.advanceTimersByTime(CONFIG.fadeDuration);
+			jest.advanceTimersByTime(CONFIG.fadeInterval);
 			expect(gpioPwmWrite.mock.calls[0][0]).toBeGreaterThanOrEqual(250);
 
 			// Should call stop again once it reaches zero
-			jest.advanceTimersByTime(CONFIG.fadeDuration);
+			jest.advanceTimersByTime(CONFIG.fadeInterval);
 			expect(intervalStop).toHaveBeenCalledTimes(2);
 		});
 
