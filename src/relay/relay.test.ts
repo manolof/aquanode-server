@@ -13,7 +13,10 @@ jest.mock('../logger');
 jest.mock('./status');
 
 describe('Relay', () => {
+	let instance: Relay;
+
 	beforeEach(() => {
+		instance = new Relay();
 		jest.clearAllMocks();
 	});
 
@@ -23,21 +26,21 @@ describe('Relay', () => {
 		const statusSet = jest.spyOn(status, 'set');
 
 		it(`should set the relay's state to on`, () => {
-			Relay.setState(RelayStatus.on);
+			instance.setState(RelayStatus.on);
 
 			expect(statusSet).toHaveBeenCalledWith(RelayStatus.on);
 			expect(gpioDigitalWrite).toHaveBeenCalledWith(0);
 		});
 
 		it(`should set the relay's state to off`, () => {
-			Relay.setState(RelayStatus.off);
+			instance.setState(RelayStatus.off);
 
 			expect(statusSet).toHaveBeenCalledWith(RelayStatus.off);
 			expect(gpioDigitalWrite).toHaveBeenCalledWith(1);
 		});
 
 		it(`should log an error if it's called with the incorrect relay state`, () => {
-			Relay.setState('test' as any);
+			instance.setState('test' as any);
 
 			expect(statusSet).not.toHaveBeenCalled();
 			expect(gpioDigitalWrite).not.toHaveBeenCalled();
