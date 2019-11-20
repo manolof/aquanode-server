@@ -1,17 +1,12 @@
 import * as socketIo from 'socket.io';
-import { CombinedNamespaces, CombinedStatus } from '../interfaces';
+import { CombinedNamespaces, CombinedStatus, ScheduleResponse } from '../interfaces';
 import { LightsSchedule } from '../lights/schedule';
 import { logger } from '../logger';
 import { RelaySchedule } from '../relay/schedule';
 
-interface Schedule {
-	job_name: string;
-	job_next_run: Date;
-}
-
-interface ScheduleResponse {
-	lights: Schedule[];
-	relay: Schedule[];
+interface ScheduleResponseAggregated {
+	lights: ScheduleResponse[];
+	relay: ScheduleResponse[];
 }
 
 export function schedule(socketServer: socketIo.Server) {
@@ -31,16 +26,16 @@ export function schedule(socketServer: socketIo.Server) {
 }
 
 function onGet(clientSocket: socketIo.Socket) {
-	const lightsSchedule = LightsSchedule.getSchedules();
-	const relaySchedule = RelaySchedule.getSchedules();
-	const transformSchedule = (_schedule) => {
-		return Object.keys(_schedule).map((job: string) => ({
-			job_name: _schedule[job].name,
-			job_next_run: _schedule[job].nextInvocation(),
+	const lightsSchedule: ScheduleResponse[] = LightsSchedule.getSchedules();
+	const relaySchedule: ScheduleResponse[] = RelaySchedule.getSchedules();
+	const transformSchedule = (_schedule: ScheduleResponse[]) => {
+		return _schedule.map((job: ScheduleResponse) => ({
+			job_state: job.job_state,
+			job_next_run: job.nextInvocation(),
 		}));
 	};
 
-	const response: ScheduleResponse = {
+	const response: ScheduleResponseAggregated = {
 		lights: transformSchedule(lightsSchedule),
 		relay: transformSchedule(relaySchedule),
 	};

@@ -1,49 +1,38 @@
 import { Schedule } from '../src/interfaces';
-import { LightsStatus } from '../src/lights/interfaces';
 import { RelayStatus } from '../src/relay/interfaces';
 
 export const lightsSchedule: Schedule[] = [
 	{
-		time: {
-			hour: 0,
-			minute: 0,
-		},
-		state: LightsStatus.off,
+		time: { hour: 0, minute: 0 },
+		state: { red: 0, green: 0, blue: 0 },
 	},
 	{
-		time: {
-			hour: 6,
-			minute: 30,
-		},
-		state: LightsStatus.day,
+		time: { hour: 6, minute: 30 },
+		state: { red: 15, green: 15, blue: 15 },
 	},
 	{
-		time: {
-			hour: 7,
-			minute: 15,
-		},
-		state: LightsStatus.off,
+		time: { hour: 6, minute: 45 },
+		state: { red: 250, green: 250, blue: 250 },
 	},
 	{
-		time: {
-			hour: 13,
-			minute: 15,
-		},
-		state: LightsStatus.day,
+		time: { hour: 7, minute: 2 },
+		state: { red: 0, green: 0, blue: 0 },
 	},
 	{
-		time: {
-			hour: 16,
-			minute: 0,
-		},
-		state: LightsStatus.night,
+		time: { hour: 13, minute: 0 },
+		state: { red: 250, green: 250, blue: 250 },
 	},
 	{
-		time: {
-			hour: 23,
-			minute: 30,
-		},
-		state: LightsStatus.off,
+		time: { hour: 15, minute: 0 },
+		state: { red: 120, green: 100, blue: 100 },
+	},
+	{
+		time: { hour: 16, minute: 0 },
+		state: { red: 15, green: 15, blue: 15 },
+	},
+	{
+		time: { hour: 23, minute: 30 },
+		state: { red: 5, green: 5, blue: 5 },
 	},
 ];
 

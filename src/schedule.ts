@@ -1,6 +1,6 @@
 import { Job, RecurrenceRule, scheduleJob } from 'node-schedule';
 
-import { CombinedStatus, Schedule } from './interfaces';
+import { CombinedStatus, Schedule, ScheduleResponse } from './interfaces';
 import { logger } from './logger';
 
 export class BaseSchedule {
@@ -36,8 +36,13 @@ export class BaseSchedule {
 		this.init();
 	}
 
-	public getSchedules(): Job[] {
-		return this.jobs;
+	public getSchedules(): ScheduleResponse[] {
+		return this.jobs.map((job: Job, index) => {
+			return {
+				...job,
+				job_state: this.schedule[index].state,
+			};
+		});
 	}
 
 	private startClosestPastEvent(schedule: Schedule[], callback: (T: CombinedStatus) => void): void {
@@ -50,7 +55,7 @@ export class BaseSchedule {
 			recurrenceRule.hour = x.time.hour;
 			recurrenceRule.minute = x.time.minute;
 
-			const jobName = `${index}: ${x.state}`;
+			const jobName = `${index}_${JSON.stringify(x.state)}`;
 
 			this.jobs.push(
 				scheduleJob(
