@@ -29,6 +29,11 @@ export class Lights {
 
 	private intervals: { red?: Interval, green?: Interval, blue?: Interval } = {};
 	private options;
+	private currentLedValues: { red: number, green: number, blue: number } = {
+		red: 0,
+		green: 0,
+		blue: 0,
+	};
 
 	constructor() {
 		this.options = {
@@ -59,18 +64,23 @@ export class Lights {
 				const ledInstance = this.options.leds[led];
 				this.intervals[led] = new Interval(
 					() => {
-						const newValue = state[led];
-						const currValue = ledInstance.getPwmDutyCycle();
+						const newValue = +state[led];
+						const currValue = this.currentLedValues[led];
+						let val = 0;
 
-						if (currValue < newValue) {
-							ledInstance.pwmWrite(currValue + 1);
-						}
-						else if (currValue > newValue) {
-							ledInstance.pwmWrite(currValue - 1);
-						}
-						else {
+						if (currValue === newValue) {
+							val = currValue;
 							this.stop(led);
 						}
+						else if (currValue < newValue) {
+							val = currValue + 1;
+							ledInstance.pwmWrite(val);
+						}
+						else if (currValue > newValue) {
+							val = currValue - 1;
+							ledInstance.pwmWrite(val);
+						}
+						this.currentLedValues[led] = val;
 					},
 					this.options.fadeInterval,
 				);
