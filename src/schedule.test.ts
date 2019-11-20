@@ -1,5 +1,6 @@
-import { Job, scheduledJobs } from 'node-schedule';
-import { LightsStatus } from './lights/interfaces';
+import { scheduledJobs } from 'node-schedule';
+import { ScheduleResponse } from './interfaces';
+import { RelayStatus } from './relay/interfaces';
 import { BaseSchedule } from './schedule';
 
 jest.mock('./logger');
@@ -23,9 +24,9 @@ const mockScheduleConfig = [
 
 const [firstJob, secondJob] = mockScheduleConfig;
 
-const mockScheduleJobs = (): Job[] => {
-	return Object.keys(scheduledJobs).map((jobKey: string) => {
-		return scheduledJobs[jobKey];
+const mockScheduleJobs = (): ScheduleResponse[] => {
+	return Object.keys(scheduledJobs).map((jobKey: string, i) => {
+		return { ...scheduledJobs[jobKey], job_state: mockScheduleConfig[i].state };
 	});
 };
 
@@ -73,15 +74,15 @@ describe('Schedule', () => {
 			TestSchedule.resetSchedule();
 			expect(TestSchedule.getSchedules()).toEqual(mockScheduleJobs());
 
-			TestSchedule.forceSchedule(LightsStatus.off);
+			TestSchedule.forceSchedule(RelayStatus.off);
 			expect(TestSchedule.getSchedules()).toEqual([]);
-			expect(setStateSpy).toHaveBeenLastCalledWith(LightsStatus.off);
+			expect(setStateSpy).toHaveBeenLastCalledWith(RelayStatus.off);
 		});
 	});
 
 	describe('resetSchedule', () => {
 		it('should reset the schedule and start new', () => {
-			TestSchedule.forceSchedule(LightsStatus.off);
+			TestSchedule.forceSchedule(RelayStatus.off);
 			expect(TestSchedule.getSchedules()).toEqual([]);
 
 			TestSchedule.resetSchedule();
