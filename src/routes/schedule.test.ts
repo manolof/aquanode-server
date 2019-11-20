@@ -1,13 +1,16 @@
 import * as socketIoServer from 'socket.io';
 import * as socketIoClient from 'socket.io-client';
 
+import { LightsStatus } from '../lights/interfaces';
 import { LightsSchedule } from '../lights/schedule';
 import { RelaySchedule } from '../relay/schedule';
 import { schedule } from './schedule';
 
+const mockJobState: LightsStatus = { red: 1, green: 2, blue: 3 };
 const mockSchedules = [
 	{
 		name: 'job1',
+		job_state: mockJobState,
 		nextInvocation: jest.fn(() => {
 			return new Date('2018-08-12');
 		}),
@@ -69,13 +72,13 @@ describe('Schedule socket: integration', () => {
 					data: {
 						lights: [
 							{
-								job_name: 'job1',
+								job_state: mockJobState,
 								job_next_run: '2018-08-12T00:00:00.000Z',
 							},
 						],
 						relay: [
 							{
-								job_name: 'job1',
+								job_state: mockJobState,
 								job_next_run: '2018-08-12T00:00:00.000Z',
 							},
 						],

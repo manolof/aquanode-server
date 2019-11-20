@@ -3,6 +3,7 @@ import * as pigpio from 'pigpio';
 const Gpio = pigpio.Gpio;
 
 import { CONFIG } from '../../conf/config';
+import { Config } from '../interfaces';
 import { Interval } from '../interval';
 import { logger } from '../logger';
 import { LightsStatus } from './interfaces';
@@ -14,26 +15,23 @@ jest.useFakeTimers();
 jest.mock('../../conf/config', () => ({
 	CONFIG: {
 		pins: {
-			white: 1,
 			red: 2,
 			green: 3,
 			blue: 4,
 			relay: 5,
 		},
-		fadeDuration: 500,
+		fadeInterval: 500,
 		logsPath: 'log.log',
-		rgbSpectrum: {
-			red: [1, 2, 3],
-			green: [1, 2, 3],
-			blue: [1, 2, 3],
-		},
-	},
+	} as Partial<Config>,
 }));
 jest.mock('../logger');
 jest.mock('./status');
 
 describe('Lights', () => {
+	let instance: Lights;
+
 	beforeEach(() => {
+		instance = new Lights();
 		jest.clearAllMocks();
 	});
 
@@ -45,63 +43,30 @@ describe('Lights', () => {
 		const intervalStart = jest.spyOn(Interval.prototype, 'start');
 		const intervalStop = jest.spyOn(Interval.prototype, 'stop');
 		const gpioPwmWrite = jest.spyOn(Gpio.prototype, 'pwmWrite');
-		const loggerError = jest.spyOn(logger, 'error');
 		const statusSet = jest.spyOn(status, 'set');
 
-		it(`should set the light's state to day`, () => {
-			Lights.setState(LightsStatus.day);
+		it(`should set the light's state`, () => {
+			const state: LightsStatus = { red: 1, green: 1, blue: 1 };
+			instance.setState(state);
 
-			expect(statusSet).toHaveBeenCalledWith(LightsStatus.day);
+			expect(statusSet).toHaveBeenCalledWith(`R: ${state.red}, G: ${state.green}, B: ${state.blue}`);
 
 			expect(intervalStop).not.toHaveBeenCalled();
 			expect(gpioPwmWrite).not.toHaveBeenCalled();
-			expect(intervalStart).toHaveBeenCalled();
+			expect(intervalStart).toHaveBeenCalledTimes(3);
 
-			jest.advanceTimersByTime(CONFIG.fadeDuration);
-			expect(gpioPwmWrite.mock.calls[0][0]).toBeLessThanOrEqual(1);
-
-			// Should call stop again once it reaches zero
-			jest.advanceTimersByTime(CONFIG.fadeDuration);
-			expect(intervalStop).toHaveBeenCalledTimes(1);
-		});
-
-		it(`should set the light's state to night`, () => {
-			Lights.setState(LightsStatus.night);
-
-			expect(statusSet).toHaveBeenCalledWith(LightsStatus.night);
-
-			expect(intervalStop).toHaveBeenCalledTimes(1);
-			expect(gpioPwmWrite).not.toHaveBeenCalled();
-			expect(intervalStart).toHaveBeenCalled();
-
-			jest.advanceTimersByTime(CONFIG.fadeDuration);
-			expect(gpioPwmWrite.mock.calls[0][0]).toBeGreaterThanOrEqual(250);
+			jest.advanceTimersByTime(CONFIG.fadeInterval);
+			gpioPwmWrite.mock.calls[0].forEach(call => expect(call).toBe(1));
 
 			// Should call stop again once it reaches zero
-			jest.advanceTimersByTime(CONFIG.fadeDuration);
-			expect(intervalStop).toHaveBeenCalledTimes(2);
-		});
+			jest.advanceTimersByTime(CONFIG.fadeInterval);
+			expect(intervalStop).toHaveBeenCalledTimes(3);
 
-		it(`should set the light's state to off`, () => {
-			Lights.setState(LightsStatus.off);
-
-			expect(statusSet).toHaveBeenCalledWith(LightsStatus.off);
-
-			expect(intervalStop).toHaveBeenCalledTimes(1);
-			expect(intervalStart).not.toHaveBeenCalled();
-
-			expect(gpioPwmWrite.mock.calls[0][0]).toBe(0);
-		});
-
-		it(`should log an error if it's called with the incorrect light state`, () => {
-			Lights.setState('test' as any);
-
-			expect(statusSet).not.toHaveBeenCalled();
-			expect(intervalStop).not.toHaveBeenCalled();
-			expect(gpioPwmWrite).not.toHaveBeenCalled();
-			expect(intervalStart).not.toHaveBeenCalled();
-
-			expect(loggerError).toHaveBeenCalled();
+			// Stop interval and set state again
+			instance.setState(state);
+			expect(intervalStop).toHaveBeenCalledTimes(6);
+			expect(gpioPwmWrite).toHaveBeenCalledTimes(3);
+			expect(intervalStart).toHaveBeenCalledTimes(6);
 		});
 	});
 

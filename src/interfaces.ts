@@ -1,3 +1,4 @@
+import { Job } from 'node-schedule';
 import { LightsConfig, LightsNamespace, LightsPins, LightsStatus } from './lights/interfaces';
 import { RelayNamespace, RelayPins, RelayStatus } from './relay/interfaces';
 import { TemperatureSensorConfig, TemperatureSensorNamespace } from './temperature-sensor/interfaces';
@@ -17,6 +18,10 @@ export type CombinedStatus = LightsStatus | RelayStatus;
 export interface Schedule {
 	time: Time;
 	state: CombinedStatus;
+}
+
+export interface ScheduleResponse extends Partial<Job> {
+	job_state: any;
 }
 
 export interface Config extends LightsConfig, TemperatureSensorConfig {

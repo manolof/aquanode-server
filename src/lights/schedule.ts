@@ -2,4 +2,5 @@ import { lightsSchedule } from '../../conf/schedule';
 import { BaseSchedule } from '../schedule';
 import { Lights } from './lights';
 
-export const LightsSchedule = new BaseSchedule(Lights, lightsSchedule);
+const lights = new Lights();
+export const LightsSchedule = new BaseSchedule(lights, lightsSchedule);

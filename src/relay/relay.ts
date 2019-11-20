@@ -12,25 +12,7 @@ import { RelayStatus } from './interfaces';
 import status from './status';
 
 export class Relay {
-	public static setState(state: RelayStatus) {
-		const relay = new Relay();
-
-		switch (state) {
-			case RelayStatus.on:
-				relay.setOn();
-				break;
-
-			case RelayStatus.off:
-				relay.setOff();
-				break;
-
-			default:
-				logger.error(`A relay change was requested for an invalid state ${state}.
-				Must be one of ${RelayStatus.on}, or ${RelayStatus.off}`);
-		}
-	}
-
-	public static shutdown() {
+	public static shutdown(): void {
 		logger.info('Shutting the relay down, cleanup running');
 
 		try {
@@ -44,32 +26,41 @@ export class Relay {
 		process.exit(0);
 	}
 
-	private static instance: Relay;
 	private options;
 
 	constructor() {
 		this.options = {
 			relay: new Gpio(CONFIG.pins.relay, { mode: Gpio.OUTPUT }),
 		};
-
-		if (!Relay.instance) {
-			Relay.instance = this;
-		}
-
-		return Relay.instance;
 	}
 
-	private setOn() {
+	public setState(state: RelayStatus): void {
+		switch (state) {
+			case RelayStatus.on:
+				this.setOn();
+				break;
+
+			case RelayStatus.off:
+				this.setOff();
+				break;
+
+			default:
+				logger.error(`A relay change was requested for an invalid state ${state}.
+				Must be one of ${RelayStatus.on}, or ${RelayStatus.off}`);
+		}
+	}
+
+	private setOn(): void {
 		status.set(RelayStatus.on);
 		this.setRelay(0);
 	}
 
-	private setOff() {
+	private setOff(): void {
 		status.set(RelayStatus.off);
 		this.setRelay(1);
 	}
 
-	private setRelay(mode: number) {
+	private setRelay(mode: number): void {
 		this.options.relay.digitalWrite(mode);
 	}
 }
