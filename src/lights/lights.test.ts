@@ -3,6 +3,7 @@ import * as pigpio from 'pigpio';
 const Gpio = pigpio.Gpio;
 
 import { CONFIG } from '../../conf/config';
+import { Config } from '../interfaces';
 import { Interval } from '../interval';
 import { logger } from '../logger';
 import { LightsStatus } from './interfaces';
@@ -14,7 +15,6 @@ jest.useFakeTimers();
 jest.mock('../../conf/config', () => ({
 	CONFIG: {
 		pins: {
-			white: 1,
 			red: 2,
 			green: 3,
 			blue: 4,
@@ -22,7 +22,7 @@ jest.mock('../../conf/config', () => ({
 		},
 		fadeInterval: 500,
 		logsPath: 'log.log',
-	},
+	} as Partial<Config>,
 }));
 jest.mock('../logger');
 jest.mock('./status');
@@ -56,7 +56,7 @@ describe('Lights', () => {
 			expect(intervalStart).toHaveBeenCalledTimes(3);
 
 			jest.advanceTimersByTime(CONFIG.fadeInterval);
-			expect(gpioPwmWrite.mock.calls[0][0]).toBe(1);
+			gpioPwmWrite.mock.calls[0].forEach(call => expect(call).toBe(1));
 
 			// Should call stop again once it reaches zero
 			jest.advanceTimersByTime(CONFIG.fadeInterval);
