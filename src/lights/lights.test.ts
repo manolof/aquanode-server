@@ -73,7 +73,7 @@ describe('Lights', () => {
 	describe('shutdown', () => {
 		const loggerInfo = jest.spyOn(logger, 'info');
 		const loggerWarn = jest.spyOn(logger, 'warn');
-		const processExit = jest.spyOn(process, 'exit').mockImplementation((_number) => _number);
+		const processExit = jest.spyOn(process, 'exit').mockImplementation(_number => _number as never);
 
 		it(`should attempt to gracefully shutdown the lights`, () => {
 			Lights.shutdown();
@@ -83,5 +83,4 @@ describe('Lights', () => {
 			expect(processExit).toHaveBeenCalled();
 		});
 	});
-
 });
