@@ -1,19 +1,11 @@
 {
-  "compilerOptions": {
-    "module": "commonjs",
-    "outDir": "dist",
-    "removeComments": true,
-    "lib": [
-      "dom",
-      "es6"
-    ],
-    "target": "es5"
-  },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "src/**/*.test.ts"
-  ]
+	"compilerOptions": {
+		"module": "commonjs",
+		"outDir": "dist",
+		"removeComments": true,
+		"lib": ["dom", "es6"],
+		"target": "es5"
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "src/**/*.test.ts"]
 }
