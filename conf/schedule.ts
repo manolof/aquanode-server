@@ -3,36 +3,32 @@ import { RelayStatus } from '../src/relay/interfaces';
 
 export const lightsSchedule: Schedule[] = [
 	{
-		time: { hour: 0, minute: 0 },
+		time: { hour: 1, minute: 0 },
 		state: { red: 0, green: 0, blue: 0 },
 	},
 	{
-		time: { hour: 6, minute: 30 },
-		state: { red: 15, green: 15, blue: 15 },
+		time: { hour: 9, minute: 0 },
+		state: { red: 15, green: 8, blue: 12 },
 	},
 	{
-		time: { hour: 6, minute: 45 },
+		time: { hour: 16, minute: 30 }, // important
 		state: { red: 250, green: 250, blue: 250 },
 	},
 	{
-		time: { hour: 7, minute: 2 },
+		time: { hour: 17, minute: 0 }, // important
 		state: { red: 0, green: 0, blue: 0 },
 	},
 	{
-		time: { hour: 13, minute: 0 },
+		time: { hour: 21, minute: 30 }, // important
 		state: { red: 250, green: 250, blue: 250 },
 	},
 	{
-		time: { hour: 15, minute: 0 },
-		state: { red: 120, green: 100, blue: 100 },
-	},
-	{
-		time: { hour: 16, minute: 0 },
-		state: { red: 15, green: 15, blue: 15 },
+		time: { hour: 22, minute: 0 }, // important
+		state: { red: 120, green: 30, blue: 90 },
 	},
 	{
 		time: { hour: 23, minute: 30 },
-		state: { red: 5, green: 5, blue: 5 },
+		state: { red: 15, green: 0, blue: 10 },
 	},
 ];
 
@@ -46,14 +42,14 @@ export const relaySchedule: Schedule[] = [
 	},
 	{
 		time: {
-			hour: 7,
+			hour: 17,
 			minute: 0,
 		},
 		state: RelayStatus.on,
 	},
 	{
 		time: {
-			hour: 14,
+			hour: 22,
 			minute: 0,
 		},
 		state: RelayStatus.off,
