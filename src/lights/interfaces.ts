@@ -4,6 +4,7 @@ export interface LightsStatus {
 	red: number;
 	green: number;
 	blue: number;
+	white: number;
 }
 
 export interface LightsConfig {
@@ -14,4 +15,5 @@ export interface LightsPins {
 	red: number;
 	green: number;
 	blue: number;
+	white: number;
 }

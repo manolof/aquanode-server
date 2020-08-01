@@ -6,7 +6,7 @@ import { LightsSchedule } from '../lights/schedule';
 import { RelaySchedule } from '../relay/schedule';
 import { schedule } from './schedule';
 
-const mockJobState: LightsStatus = { red: 1, green: 2, blue: 3 };
+const mockJobState: LightsStatus = { red: 1, green: 2, blue: 3, white: 4 };
 const mockSchedules = [
 	{
 		name: 'job1',
@@ -56,10 +56,7 @@ describe('Schedule socket: integration', () => {
 	it('should set up the namespace', (done: () => void) => {
 		_socketClient.once('connect', () => {
 			expect(_socketServer.engine['clientsCount']).toBe(1);
-			expect(
-				Object.keys(_socketServer.nsps)
-					.some((nsp) => _socketServer.nsps[nsp].name === '/schedule')
-			).toBe(true);
+			expect(Object.keys(_socketServer.nsps).some(nsp => _socketServer.nsps[nsp].name === '/schedule')).toBe(true);
 
 			done();
 		});
@@ -67,7 +64,7 @@ describe('Schedule socket: integration', () => {
 
 	it('should emit the schedule on connect', (done: () => void) => {
 		_socketClient.once('connect', () => {
-			_socketClient.once('get', (msg) => {
+			_socketClient.once('get', msg => {
 				expect(msg).toEqual({
 					data: {
 						lights: [
@@ -92,77 +89,73 @@ describe('Schedule socket: integration', () => {
 
 	describe(`should receive a 'set' event and re-emit the schedule`, () => {
 		it('for the lights', (done: () => void) => {
-			_socketServer.of('/schedule')
-				.once('connection', (clientSocket: socketIoServer.Socket) => {
-					const mockLightsPayload = {
-						type: 'lights',
-						value: 'night',
-					};
+			_socketServer.of('/schedule').once('connection', (clientSocket: socketIoServer.Socket) => {
+				const mockLightsPayload = {
+					type: 'lights',
+					value: 'night',
+				};
 
-					_socketClient.emit('set', mockLightsPayload);
-					expect(lightsForceSchedule).not.toHaveBeenCalled();
+				_socketClient.emit('set', mockLightsPayload);
+				expect(lightsForceSchedule).not.toHaveBeenCalled();
 
-					clientSocket.once('set', (message) => {
-						expect(message).toEqual(mockLightsPayload);
-						expect(lightsForceSchedule).toHaveBeenCalledTimes(1);
+				clientSocket.once('set', message => {
+					expect(message).toEqual(mockLightsPayload);
+					expect(lightsForceSchedule).toHaveBeenCalledTimes(1);
 
-						done();
-					});
+					done();
 				});
+			});
 		});
 
 		it('for the relay', (done: () => void) => {
-			_socketServer.of('/schedule')
-				.once('connection', (clientSocket: socketIoServer.Socket) => {
-					const mockRelayPayload = {
-						type: 'relay',
-						value: 'off',
-					};
+			_socketServer.of('/schedule').once('connection', (clientSocket: socketIoServer.Socket) => {
+				const mockRelayPayload = {
+					type: 'relay',
+					value: 'off',
+				};
 
-					_socketClient.emit('set', mockRelayPayload);
-					expect(relayForceSchedule).not.toHaveBeenCalled();
+				_socketClient.emit('set', mockRelayPayload);
+				expect(relayForceSchedule).not.toHaveBeenCalled();
 
-					clientSocket.once('set', (message) => {
-						expect(message).toEqual(mockRelayPayload);
-						expect(relayForceSchedule).toHaveBeenCalledTimes(1);
+				clientSocket.once('set', message => {
+					expect(message).toEqual(mockRelayPayload);
+					expect(relayForceSchedule).toHaveBeenCalledTimes(1);
 
-						done();
-					});
+					done();
 				});
+			});
 		});
 	});
 
 	describe(`should receive a 'reset' event and re-emit the schedule`, () => {
 		it('for the lights', (done: () => void) => {
-			_socketServer.of('/schedule')
-				.once('connection', (clientSocket: socketIoServer.Socket) => {
-					_socketClient.emit('reset', {
-						type: 'lights',
-					});
-					expect(lightsResetSchedule).not.toHaveBeenCalled();
-
-					clientSocket.once('reset', () => {
-						expect(lightsResetSchedule).toHaveBeenCalledTimes(1);
-
-						done();
-					});
+			_socketServer.of('/schedule').once('connection', (clientSocket: socketIoServer.Socket) => {
+				_socketClient.emit('reset', {
+					type: 'lights',
 				});
+				expect(lightsResetSchedule).not.toHaveBeenCalled();
+
+				clientSocket.once('reset', () => {
+					expect(lightsResetSchedule).toHaveBeenCalledTimes(1);
+
+					done();
+				});
+			});
 		});
 
 		it('for the relay', (done: () => void) => {
-			_socketServer.of('/schedule')
-				.once('connection', (clientSocket: socketIoServer.Socket) => {
-					_socketClient.emit('reset', {
-						type: 'relay',
-					});
-					expect(relayResetSchedule).not.toHaveBeenCalled();
-
-					clientSocket.once('reset', () => {
-						expect(relayResetSchedule).toHaveBeenCalledTimes(1);
-
-						done();
-					});
+			_socketServer.of('/schedule').once('connection', (clientSocket: socketIoServer.Socket) => {
+				_socketClient.emit('reset', {
+					type: 'relay',
 				});
+				expect(relayResetSchedule).not.toHaveBeenCalled();
+
+				clientSocket.once('reset', () => {
+					expect(relayResetSchedule).toHaveBeenCalledTimes(1);
+
+					done();
+				});
+			});
 		});
 	});
 });

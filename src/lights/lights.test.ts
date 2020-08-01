@@ -19,6 +19,7 @@ jest.mock('../../conf/config', () => ({
 			green: 3,
 			blue: 4,
 			relay: 5,
+			white: 6,
 		},
 		fadeInterval: 500,
 		logsPath: 'log.log',
@@ -46,27 +47,27 @@ describe('Lights', () => {
 		const statusSet = jest.spyOn(status, 'set');
 
 		it(`should set the light's state`, () => {
-			const state: LightsStatus = { red: 1, green: 1, blue: 1 };
+			const state: LightsStatus = { red: 1, green: 1, blue: 1, white: 1 };
 			instance.setState(state);
 
-			expect(statusSet).toHaveBeenCalledWith(`R: ${state.red}, G: ${state.green}, B: ${state.blue}`);
+			expect(statusSet).toHaveBeenCalledWith(`R: ${state.red}, G: ${state.green}, B: ${state.blue}, W: ${state.white}`);
 
 			expect(intervalStop).not.toHaveBeenCalled();
 			expect(gpioPwmWrite).not.toHaveBeenCalled();
-			expect(intervalStart).toHaveBeenCalledTimes(3);
+			expect(intervalStart).toHaveBeenCalledTimes(4);
 
 			jest.advanceTimersByTime(CONFIG.fadeInterval);
 			gpioPwmWrite.mock.calls[0].forEach(call => expect(call).toBe(1));
 
 			// Should call stop again once it reaches zero
 			jest.advanceTimersByTime(CONFIG.fadeInterval);
-			expect(intervalStop).toHaveBeenCalledTimes(3);
+			expect(intervalStop).toHaveBeenCalledTimes(4);
 
 			// Stop interval and set state again
 			instance.setState(state);
-			expect(intervalStop).toHaveBeenCalledTimes(6);
-			expect(gpioPwmWrite).toHaveBeenCalledTimes(3);
-			expect(intervalStart).toHaveBeenCalledTimes(6);
+			expect(intervalStop).toHaveBeenCalledTimes(8);
+			expect(gpioPwmWrite).toHaveBeenCalledTimes(4);
+			expect(intervalStart).toHaveBeenCalledTimes(8);
 		});
 	});
 

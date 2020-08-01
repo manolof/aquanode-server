@@ -6,6 +6,7 @@ export const CONFIG: Config = {
 		red: 17,
 		green: 27,
 		blue: 22,
+		white: 18,
 		relay: 23,
 	},
 	fadeInterval: 5000,
