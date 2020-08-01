@@ -1,6 +1,6 @@
 # Aquanode Server 🐟 🌿
 
-[![Build Status](https://travis-ci.org/manolof/aquanode-server.svg?branch=master)](https://travis-ci.org/manolof/aquanode-server)
+![Build Status](https://github.com/manolof/aquanode-server/workflows/CI/badge.svg?branch=master)
 [![codecov](https://codecov.io/gh/manolof/aquanode-server/branch/master/graph/badge.svg)](https://codecov.io/gh/manolof/aquanode-server)
 
 Automated lighting control for an aquarium using a Raspberry Pi.

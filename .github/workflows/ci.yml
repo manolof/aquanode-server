@@ -34,7 +34,6 @@ jobs:
     - name: Install dependencies
       run: |
         npm ci
-        npm install -g codecov
         npm install -g pm2
 
     - name: Install pigpio
@@ -47,7 +46,11 @@ jobs:
     - name: Test
       run: |
         npm run test
-        codecov -f coverage/coverage-final.json --disable=gcov
+
+    - name: Codecov
+      uses: codecov/codecov-action@v1.0.12
+      with:
+        file: coverage/coverage-final.json
 
     - name: Start app
       run: |
